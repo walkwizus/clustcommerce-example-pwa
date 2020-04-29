@@ -34,12 +34,12 @@ export default class App extends React.Component {
     ;
   }
 
-  routeComponent(pageType) {
-    switch (pageType) {
+  routeComponent(page) {
+    switch (page.type) {
       case 'category':
-        return <ProductList/>
+        return <ProductList key={page.url_key} urlKey={page.url_key}/>
       case 'product':
-        return <Product/>
+        return <Product key={page.url_key} urlKey={page.url_key}/>
       default:
         return <Home/>
     }
@@ -50,7 +50,7 @@ export default class App extends React.Component {
     this.state.allCategories.forEach((category) => {
       if (category.data.parent == 25 && category.data.isActive && category.data.includeInMenu) {
         if (category.data.children.length == 0) {
-          categories.push(<li key={category.id}><a href={"/"+ category.data.urlKey}>{ category.data.name }</a></li>)
+          categories.push(<li key={category.id}><Link to={"/"+ category.data.urlKey}>{ category.data.name }</Link></li>)
         } else {
           categories.push(
             <li className="dropdown yamm-fw" key={category.id}>
@@ -78,7 +78,7 @@ export default class App extends React.Component {
     let submenu = [];
     for (var key in this.state.allCategories) {
       if (!this.state.allCategories[key].data.isActive || !this.state.allCategories[key].data.includeInMenu) {
-        return submenu;
+        continue;
       }
 
       if (this.state.allCategories[key].data.parent === parentId) {
@@ -90,7 +90,7 @@ export default class App extends React.Component {
               && this.state.allCategories[keybis].data.isActive
               && this.state.allCategories[keybis].data.includeInMenu
             ) {
-              subsubmenu.push((<li><a href={"/" + this.state.allCategories[keybis].data.urlKey}>{this.state.allCategories[keybis].data.name}</a></li>))
+              subsubmenu.push((<li><Link to={"/" + this.state.allCategories[keybis].data.urlKey}>{this.state.allCategories[keybis].data.name}</Link></li>))
             }
           }
 
@@ -102,7 +102,7 @@ export default class App extends React.Component {
           </div>))
         } else {
           submenu.push((<div className="col-sm-3">
-            <h5><a href={"/" + this.state.allCategories[key].data.urlKey}>{this.state.allCategories[key].data.name}</a></h5>
+            <h5><Link to={"/" + this.state.allCategories[key].data.urlKey}>{this.state.allCategories[key].data.name}</Link></h5>
           </div>))
         }
       }
@@ -136,11 +136,11 @@ export default class App extends React.Component {
         <div className="navbar navbar-default yamm" role="navigation" id="navbar">
           <div className="container">
             <div className="navbar-header">
-              <a className="navbar-brand home" href="index.html" data-animate-hover="bounce">
+              <Link className="navbar-brand home" to={"/"} data-animate-hover="bounce">
                 <img src="/assets/img/logo.png" alt="Obaju logo" className="hidden-xs"/>
                 <img src="/assets/img/logo-small.png" alt="Obaju logo" className="visible-xs"/>
                 <span className="sr-only">Clustcommerce</span>
-              </a>
+              </Link>
               <div className="navbar-buttons">
                 <button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#navigation">
                   <span className="sr-only">Toggle navigation</span>
@@ -197,9 +197,7 @@ export default class App extends React.Component {
           renders the first one that matches the current URL. */}
           <Switch>
             {this.state.allPages.map(function(page) {
-              return <Route path={'/'+ page.url_key} onChange={self.componentDidMount}>
-                {self.routeComponent(page.type)}
-              </Route>
+              return <Route path={'/'+ page.url_key} render={() => self.routeComponent(page)}/>
             })}
 
             <Route path="/" onChange={self.componentDidMount}>
