@@ -37,9 +37,9 @@ export default class App extends React.Component {
   routeComponent(page) {
     switch (page.type) {
       case 'category':
-        return <ProductList key={page.url_key} urlKey={page.url_key}/>
+        return <ProductList key={page.url_key}/>
       case 'product':
-        return <Product key={page.url_key} urlKey={page.url_key}/>
+        return <Product key={page.url_key}/>
       default:
         return <Home/>
     }

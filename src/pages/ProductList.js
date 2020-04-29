@@ -11,6 +11,10 @@ export default class ProductList extends React.Component {
   }
 
   componentDidMount() {
+
+  }
+
+  componentWillReceiveProps(nextProps) {
     var self = this;
     getPageContent()
       .then(function(response) {
