@@ -84,13 +84,15 @@ export default class App extends React.Component {
       if (this.state.allCategories[key].data.parent === parentId) {
         if (this.state.allCategories[key].data.children.length > 0) {
           var subsubmenu = []
-          this.state.allCategories[key].data.children.forEach((subsubcategory) => {
-            for (var keybis in this.state.allCategories) {
-              if (this.state.allCategories[keybis].data.parent === this.state.allCategories[key].data.id && this.state.allCategories[key].data.isActive && this.state.allCategories[key].data.includeInMenu) {
-                subsubmenu.push((<li><a href={"/" + this.state.allCategories[keybis].data.urlKey}>{this.state.allCategories[keybis].data.name}</a></li>))
-              }
+          for (var keybis in this.state.allCategories) {
+            if (
+              this.state.allCategories[keybis].data.parent === this.state.allCategories[key].data.id
+              && this.state.allCategories[keybis].data.isActive
+              && this.state.allCategories[keybis].data.includeInMenu
+            ) {
+              subsubmenu.push((<li><a href={"/" + this.state.allCategories[keybis].data.urlKey}>{this.state.allCategories[keybis].data.name}</a></li>))
             }
-          })
+          }
 
           submenu.push((<div className="col-sm-3">
             <h5>{this.state.allCategories[key].data.name}</h5>
@@ -100,7 +102,7 @@ export default class App extends React.Component {
           </div>))
         } else {
           submenu.push((<div className="col-sm-3">
-            <h5>{this.state.allCategories[key].data.name}</h5>
+            <h5><a href={"/" + this.state.allCategories[key].data.urlKey}>{this.state.allCategories[key].data.name}</a></h5>
           </div>))
         }
       }
