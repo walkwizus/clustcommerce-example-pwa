@@ -9,9 +9,9 @@ module.exports.config = {
         index: './build/index.html'
     },
     source_magento: {
-        base_url: 'http://m2.recommerce.local:8040',
-        username: 'Jperrin',
-        password: 'u69Y6;#wPf'
+        base_url: 'http://demo.magento.local',
+        username: 'admin',
+        password: 'pwd'
     }
 }
 
