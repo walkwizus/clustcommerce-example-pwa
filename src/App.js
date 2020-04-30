@@ -25,7 +25,7 @@ export default class App extends React.Component {
         self.setState({'allPages': result});
       })
     ;
-    getAllCategories()
+    getMenu()
       .then(function(response) {
         return response.json()
       }).then(function (result) {
@@ -48,7 +48,7 @@ export default class App extends React.Component {
   buildMenuCategory() {
     let categories = [];
     this.state.allCategories.forEach((category) => {
-      if (category.data.parent == 25 && category.data.isActive && category.data.includeInMenu) {
+      if (category.data.parent == null && category.data.isActive && category.data.includeInMenu) {
         if (category.data.children.length == 0) {
           categories.push(<li key={category.id}><Link to={"/"+ category.data.urlKey}>{ category.data.name }</Link></li>)
         } else {
@@ -256,6 +256,6 @@ function getAllPages() {
   return fetch('/__internal/all-pages');
 }
 
-function getAllCategories() {
-  return fetch('/__internal/source-magento2/categories');
+function getMenu() {
+  return fetch('/__internal/source-magento2/menu?frontUrl=' + window.location.origin);
 }

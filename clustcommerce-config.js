@@ -11,7 +11,11 @@ module.exports.config = {
     source_magento: {
         base_url: 'http://demo.magento.local',
         username: 'admin',
-        password: 'pwd'
+        password: 'pwd',
+        websites: [{
+            store_view_code: 'store_code',
+            base_url: 'http://localhost:3334'
+        }]
     }
 }
 
