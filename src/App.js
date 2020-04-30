@@ -247,15 +247,21 @@ class Product extends React.Component {
 }
 
 function getPageContent() {
+  var myHeaders = new Headers();
+  myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
   var path = window.location.pathname;
 
-  return fetch('/__internal/page-content?urlKey=' + path.substr(1));
+  return fetch('/__internal/page-content?urlKey=' + path.substr(1), {headers: myHeaders});
 }
 
 function getAllPages() {
-  return fetch('/__internal/all-pages');
+  var myHeaders = new Headers();
+  myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+  return fetch('/__internal/all-pages', {headers: myHeaders});
 }
 
 function getMenu() {
-  return fetch('/__internal/source-magento2/menu?frontUrl=' + window.location.origin);
+  var myHeaders = new Headers();
+  myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+  return fetch('/__internal/source-magento2/menu?frontUrl', {headers: myHeaders});
 }

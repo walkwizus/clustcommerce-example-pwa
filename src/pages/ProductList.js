@@ -1,9 +1,13 @@
 import React from "react";
+import {
+  Link
+} from "react-router-dom";
 
 export default class ProductList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      path: null,
       products: [],
       page: 0,
       limit: 21
@@ -11,17 +15,19 @@ export default class ProductList extends React.Component {
   }
 
   componentDidMount() {
-
+    if (this.state.path !== window.location.pathname) {
+      var self = this;
+      getPageContent()
+        .then(function (response) {
+          return response.json()
+        }).then(function (result) {
+        self.setState({'products': result.products, 'path': window.location.pathname});
+      });
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    var self = this;
-    getPageContent()
-      .then(function(response) {
-        return response.json()
-      }).then(function (result) {
-      self.setState({'products': result.products});
-    });
+    this.componentDidMount()
   }
 
   render() {
@@ -115,8 +121,8 @@ export default class ProductList extends React.Component {
                       <h3><a href={"/"+product.urlKey}>{product.name}</a></h3>
                       <p className="price"></p>
                       <p className="buttons">
-                        <a href={"/"+product.urlKey} className="btn btn-default">View
-                          detail</a>
+                        <Link to={"/"+product.urlKey} className="btn btn-default">View
+                          detail</Link>
                       </p>
                     </div>
                   </div>
@@ -150,7 +156,9 @@ export default class ProductList extends React.Component {
 }
 
 function getPageContent() {
+  var myHeaders = new Headers();
+  myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
   var path = window.location.pathname;
 
-  return fetch('/__internal/page-content?urlKey=' + path.substr(1));
+  return fetch('/__internal/page-content?urlKey=' + path.substr(1), {headers: myHeaders});
 }
