@@ -15,15 +15,14 @@ export default class ProductList extends React.Component {
   }
 
   componentDidMount() {
-    if (this.state.path !== window.location.pathname) {
-      var self = this;
-      getPageContent()
-        .then(function (response) {
-          return response.json()
-        }).then(function (result) {
-        self.setState({'products': result.products, 'path': window.location.pathname});
-      });
-    }
+    var self = this;
+    getPageContent()
+    .then(function (response) {
+      return response.json()
+    }).then(function (result) {
+      console.log(result)
+      self.setState({'products': result.products, 'path': window.location.pathname});
+    });
   }
 
   componentWillReceiveProps(nextProps) {
