@@ -9,6 +9,7 @@ export default class ProductList extends React.Component {
     this.state = {
       path: null,
       products: [],
+      filters: [],
       page: 0,
       limit: 21
     };
@@ -20,8 +21,11 @@ export default class ProductList extends React.Component {
     .then(function (response) {
       return response.json()
     }).then(function (result) {
-      console.log(result)
-      self.setState({'products': result.products, 'path': window.location.pathname});
+      self.setState({
+        'products': result.products,
+        'filters': result.applicableFilters,
+        'path': window.location.pathname
+      });
     });
   }
 
@@ -42,15 +46,33 @@ export default class ProductList extends React.Component {
             </ul>
           </div>
           <div className="col-md-3">
-            <div className="panel panel-default sidebar-menu">
-              <div className="panel-heading">
-                <h3 className="panel-title">xx</h3>
-              </div>
-              <div className="panel-body">
-                <div className="form-group">
+            {this.state.filters.map(function(filter) {
+              if (filter.options.length < 2) {
+                return '';
+              }
+
+              let field = '';
+              if (filter.frontend_input === 'select') {
+                field = (<select class="form-control">
+                  <option>-</option>
+                  {filter.options.map((option) => {
+                    return <option value={option.value}>{option.label}</option>
+                  })}
+                </select>)
+              }
+
+              return <div className="panel panel-default sidebar-menu" key={filter.attribute}>
+                <div className="panel-heading">
+                  <h3 className="panel-title">{filter.label}</h3>
+                </div>
+                <div className="panel-body">
+                  <div className="form-group">
+                    {field}
+                  </div>
                 </div>
               </div>
-            </div>
+            })}
+
             <div className="banner">
               <a href="#">
                 <img src="/assets/img/banner.jpg" alt="sales 2014" className="img-responsive"/>
