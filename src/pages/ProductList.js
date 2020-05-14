@@ -8,8 +8,10 @@ export default class ProductList extends React.Component {
     super(props);
     this.state = {
       path: null,
+      allProducts: [],
       products: [],
       filters: [],
+      currentFilters: {},
       page: 0,
       limit: 21
     };
@@ -22,11 +24,49 @@ export default class ProductList extends React.Component {
       return response.json()
     }).then(function (result) {
       self.setState({
-        'products': result.products,
+        'allProducts': result.products,
         'filters': result.applicableFilters,
         'path': window.location.pathname
       });
+
+      self.filterProducts()
     });
+  }
+
+  filterProducts() {
+    let self = this;
+    this.setState({'products': this.state.allProducts.filter((product) => {
+      for (const attribute in self.state.currentFilters) {
+        const currentFilterValues = self.state.currentFilters[attribute];
+        let foundValue = false;
+
+        for (let i = 0; i < product.filterableValues.length; i++) {
+          if (product.filterableValues[i].attribute === attribute) {
+            foundValue = true;
+            if (!currentFilterValues.includes(product.filterableValues[i].value)) {
+              return false;
+            }
+          }
+        }
+
+        if (!foundValue) {
+          return false;
+        }
+      }
+
+      return true;
+    })})
+  }
+
+  switchSelectFilter(event) {
+    console.log(event.target.value)
+    this.state.currentFilters[event.target.name] = [event.target.value]
+
+    if (event.target.value === "CLUST_NONE_VALUE") {
+      delete this.state.currentFilters[event.target.name]
+    }
+
+    this.filterProducts()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -34,6 +74,7 @@ export default class ProductList extends React.Component {
   }
 
   render() {
+    let self = this;
     return <div id="content">
       <div className="container">
         <form method="get" action="#">
@@ -53,10 +94,10 @@ export default class ProductList extends React.Component {
 
               let field = '';
               if (filter.frontend_input === 'select') {
-                field = (<select class="form-control">
-                  <option>-</option>
+                field = (<select class="form-control" name={filter.attribute} onChange={self.switchSelectFilter.bind(self)} value={self.state.currentFilters[filter.attribute] ? self.state.currentFilters[filter.attribute] : null}>
+                  <option value="CLUST_NONE_VALUE" key="CLUST_NONE_VALUE">-</option>
                   {filter.options.map((option) => {
-                    return <option value={option.value}>{option.label}</option>
+                    return <option value={option.value} key={option.value}>{option.label}</option>
                   })}
                 </select>)
               }
