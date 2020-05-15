@@ -12,9 +12,10 @@ export default class ProductList extends React.Component {
       products: [],
       applicableFilters: [],
       filters: [],
+      category: {},
       currentFilters: {},
       page: 0,
-      limit: 21
+      limit: 12
     };
   }
 
@@ -27,6 +28,7 @@ export default class ProductList extends React.Component {
       self.setState({
         'allProducts': result.products,
         'applicableFilters': result.applicableFilters,
+        'category': result,
         'path': window.location.pathname
       });
 
@@ -91,6 +93,12 @@ export default class ProductList extends React.Component {
     this.setState({'filters': filters})
   }
 
+  clearFilter(filterName) {
+    delete this.state.currentFilters[filterName]
+
+    this.filterProducts()
+  }
+
   switchSelectFilter(event) {
     this.state.currentFilters[event.target.name] = [event.target.value]
 
@@ -107,6 +115,7 @@ export default class ProductList extends React.Component {
 
   render() {
     let self = this;
+    let productsToShow = this.state.products.slice(this.state.page * this.state.limit, (this.state.page + 1) * this.state.limit)
     return <div id="content">
       <div className="container">
         <form method="get" action="#">
@@ -127,16 +136,24 @@ export default class ProductList extends React.Component {
               let field = '';
               if (filter.frontend_input === 'select') {
                 field = (<select class="form-control" name={filter.attribute} onChange={self.switchSelectFilter.bind(self)} value={self.state.currentFilters[filter.attribute] ? self.state.currentFilters[filter.attribute] : null}>
-                  <option value="CLUST_NONE_VALUE" key="CLUST_NONE_VALUE">-</option>
+                  <option value="CLUST_NONE_VALUE" key="CLUST_NONE_VALUE" selected={!self.state.currentFilters[filter.attribute]}>-</option>
                   {filter.options.map((option) => {
-                    return <option value={option.value} key={option.value}>{option.label}</option>
+                    return <option value={option.value} key={option.value} selected={self.state.currentFilters[filter.attribute] && self.state.currentFilters[filter.attribute] === filter.value}>{option.label}</option>
                   })}
                 </select>)
               }
 
               return <div className="panel panel-default sidebar-menu" key={filter.attribute}>
                 <div className="panel-heading">
-                  <h3 className="panel-title">{filter.label}</h3>
+                  <h3 className="panel-title">
+                    {filter.label}
+                    {self.state.currentFilters[filter.attribute]
+                      ? (<a className="btn btn-sm btn-danger pull-right" onClick={() => {self.clearFilter(filter.attribute)}}>
+                        <i className="fa fa-times-circle"></i> Clear
+                      </a>)
+                      : ''
+                    }
+                  </h3>
                 </div>
                 <div className="panel-body">
                   <div className="form-group">
@@ -155,35 +172,26 @@ export default class ProductList extends React.Component {
 
           <div className="col-md-9">
             <div className="box">
-              <h1>xxxx</h1>
-              <p>xxx</p>
+              <h1>{this.state.category.name}</h1>
             </div>
             <div className="box info-bar">
               <div className="row">
-                <div className="col-sm-12 col-md-4 products-showing">
-
+                <div className="col-md-12 col-lg-4 products-showing">
+                  Showing <strong>{productsToShow.length}</strong> of <strong>{this.state.products.length}</strong> products
                 </div>
-                <div className="col-sm-12 col-md-8  products-number-sort">
-                  <div className="row">
-                    <form className="form-inline">
-                      <div className="col-md-6 col-sm-6">
-                        <div className="products-number">
-                          <strong>Show</strong>
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="products-sort-by">
-                          <strong>Sort by</strong>
-
-                        </div>
-                      </div>
-                    </form>
-                  </div>
+                <div className="col-md-12 col-lg-7 products-number-sort">
+                  <form className="form-inline d-block d-lg-flex justify-content-between flex-column flex-md-row">
+                    <div className="products-number"><strong>Show</strong>
+                      <a className={this.state.limit === 12 ? "btn btn-sm btn-primary" : "btn btn-outline-secondary btn-sm"} onClick={() => {this.setState({'limit': 12})}}>12</a>
+                      <a className={this.state.limit === 24 ? "btn btn-sm btn-primary" : "btn btn-outline-secondary btn-sm"} onClick={() => {this.setState({'limit': 24})}}>24</a>
+                      <a className={this.state.limit === 48 ? "btn btn-sm btn-primary" : "btn btn-outline-secondary btn-sm"} onClick={() => {this.setState({'limit': 48})}}>48</a>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
             <div className="row products">
-              {this.state.products.slice(this.state.page * this.state.limit, (this.state.page + 1) * this.state.limit).map(function(product) {
+              {productsToShow.map(function(product) {
                 return <div className="col-md-4 col-sm-6" key={product.id}>
                   <div className="product">
                     <div className="flip-container">
