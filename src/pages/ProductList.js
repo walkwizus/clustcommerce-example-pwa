@@ -10,6 +10,7 @@ export default class ProductList extends React.Component {
       path: null,
       allProducts: [],
       products: [],
+      applicableFilters: [],
       filters: [],
       currentFilters: {},
       page: 0,
@@ -25,7 +26,7 @@ export default class ProductList extends React.Component {
     }).then(function (result) {
       self.setState({
         'allProducts': result.products,
-        'filters': result.applicableFilters,
+        'applicableFilters': result.applicableFilters,
         'path': window.location.pathname
       });
 
@@ -35,6 +36,8 @@ export default class ProductList extends React.Component {
 
   filterProducts() {
     let self = this;
+    // Filter products
+    let filterableValues = {}
     this.setState({'products': this.state.allProducts.filter((product) => {
       for (const attribute in self.state.currentFilters) {
         const currentFilterValues = self.state.currentFilters[attribute];
@@ -54,12 +57,41 @@ export default class ProductList extends React.Component {
         }
       }
 
+      // Save filterableValues
+      product.filterableValues.forEach((filterableValue) => {
+        if (!filterableValues[filterableValue.attribute]) {
+          filterableValues[filterableValue.attribute] = []
+        }
+
+        filterableValues[filterableValue.attribute].push(filterableValue.value)
+      })
+
       return true;
     })})
+
+    // Filter filters to get only one that contains products
+    let filters = []
+    this.state.applicableFilters.forEach((applicableFilter) => {
+      if (!filterableValues[applicableFilter.attribute]) {
+        return;
+      }
+
+      let filter = {...applicableFilter}
+      if (filter.attribute === 'price') {
+        return;
+      }
+
+      filter.options = filter.options.filter((filterValue) => {
+        return filterableValues[applicableFilter.attribute].includes(filterValue.value)
+      })
+
+      filters.push(filter);
+    })
+
+    this.setState({'filters': filters})
   }
 
   switchSelectFilter(event) {
-    console.log(event.target.value)
     this.state.currentFilters[event.target.name] = [event.target.value]
 
     if (event.target.value === "CLUST_NONE_VALUE") {
@@ -88,7 +120,7 @@ export default class ProductList extends React.Component {
           </div>
           <div className="col-md-3">
             {this.state.filters.map(function(filter) {
-              if (filter.options.length < 2) {
+              if (filter.options.length < 2 && !self.state.currentFilters[filter.attribute]) {
                 return '';
               }
 
@@ -181,7 +213,7 @@ export default class ProductList extends React.Component {
                     </div>
                     <div className="text">
                       <h3><a href={"/"+product.urlKey}>{product.name}</a></h3>
-                      <p className="price"></p>
+                      <p className="price">{product.filterableValues.price}</p>
                       <p className="buttons">
                         <Link to={"/"+product.urlKey} className="btn btn-default">View
                           detail</Link>
