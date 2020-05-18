@@ -1,7 +1,9 @@
-import React from "react";
+import React from 'react';
+import ReactBootstrapSlider from 'react-bootstrap-slider';
 import {
   Link
 } from "react-router-dom";
+import "bootstrap-slider/dist/css/bootstrap-slider.css"
 
 export default class ProductList extends React.Component {
   constructor(props) {
@@ -25,8 +27,14 @@ export default class ProductList extends React.Component {
     .then(function (response) {
       return response.json()
     }).then(function (result) {
+      let filterTypes = {};
+      result.applicableFilters.forEach((applicableFilter) => {
+        filterTypes[applicableFilter.attribute] = applicableFilter.frontend_input
+      })
+
       self.setState({
         'allProducts': result.products,
+        'filterTypes': filterTypes,
         'applicableFilters': result.applicableFilters,
         'category': result,
         'path': window.location.pathname
@@ -41,26 +49,58 @@ export default class ProductList extends React.Component {
     // Filter products
     let filterableValues = {}
     this.setState({'products': this.state.allProducts.filter((product) => {
+      // Authorize one filter to not match the products to get all available options in filters
+      let filtersNotMatch = [];
+
       for (const attribute in self.state.currentFilters) {
         const currentFilterValues = self.state.currentFilters[attribute];
-        let foundValue = false;
+        let filterFound = false;
 
         for (let i = 0; i < product.filterableValues.length; i++) {
           if (product.filterableValues[i].attribute === attribute) {
-            foundValue = true;
-            if (!currentFilterValues.includes(product.filterableValues[i].value)) {
-              return false;
+            filterFound = true;
+
+            if (self.state.filterTypes[attribute] && self.state.filterTypes[attribute] === 'price') {
+              const priceValue = product.filterableValues[i].value;
+              if (priceValue < currentFilterValues[0] || priceValue > currentFilterValues[1]) {
+                filtersNotMatch.push(attribute)
+              }
+            } else {
+              if (!currentFilterValues.includes(product.filterableValues[i].value)) {
+                filtersNotMatch.push(attribute);
+              }
             }
           }
         }
 
-        if (!foundValue) {
+        if (!filterFound) {
           return false;
         }
       }
 
       // Save filterableValues
       product.filterableValues.forEach((filterableValue) => {
+        // If more than 2 filters that doesn't match, skip the value
+        if (filtersNotMatch.length > 2) {
+          return;
+        }
+
+        // Process the filter that doesn't match, check if that the product as the good value for the unmatched filter
+        for (let i = 0; i < filtersNotMatch.length; i++) {
+          if (filterableValue.attribute !== filtersNotMatch[i]) {
+            if (self.state.filterTypes[filtersNotMatch[i]] && self.state.filterTypes[filtersNotMatch[i]] === 'price') {
+              const priceValue = filterableValue.value;
+              if (priceValue < self.state.currentFilters[filtersNotMatch[i]][0] || priceValue > self.state.currentFilters[filtersNotMatch[i]][0]) {
+                return;
+              }
+            } else {
+              if (!self.state.currentFilters[filtersNotMatch[i]].includes(product[filtersNotMatch[i]])) {
+                return;
+              }
+            }
+          }
+        }
+
         if (!filterableValues[filterableValue.attribute]) {
           filterableValues[filterableValue.attribute] = []
         }
@@ -68,7 +108,8 @@ export default class ProductList extends React.Component {
         filterableValues[filterableValue.attribute].push(filterableValue.value)
       })
 
-      return true;
+      // Anyway, any product that doesn't match fully all filters, should not be shown
+      return filtersNotMatch.length <= 0;
     })})
 
     // Filter filters to get only one that contains products
@@ -80,6 +121,13 @@ export default class ProductList extends React.Component {
 
       let filter = {...applicableFilter}
       if (filter.attribute === 'price') {
+        filter.minValue = Math.min.apply(Math, filterableValues[applicableFilter.attribute])
+        filter.maxValue = Math.max.apply(Math, filterableValues[applicableFilter.attribute])
+
+        if (filter.minValue !== filter.maxValue) {
+          filters.push(filter)
+        }
+
         return;
       }
 
@@ -109,6 +157,12 @@ export default class ProductList extends React.Component {
     this.filterProducts()
   }
 
+  changePrice(filterName, event) {
+    this.state.currentFilters[filterName] = event.target.value
+
+    this.filterProducts()
+  }
+
   componentWillReceiveProps(nextProps) {
     this.componentDidMount()
   }
@@ -129,7 +183,7 @@ export default class ProductList extends React.Component {
           </div>
           <div className="col-md-3">
             {this.state.filters.map(function(filter) {
-              if (filter.options.length < 2 && !self.state.currentFilters[filter.attribute]) {
+              if ((filter.options.length < 2 && filter.frontend_input !== 'price') && !self.state.currentFilters[filter.attribute]) {
                 return '';
               }
 
@@ -141,6 +195,11 @@ export default class ProductList extends React.Component {
                     return <option value={option.value} key={option.value} selected={self.state.currentFilters[filter.attribute] && self.state.currentFilters[filter.attribute] === filter.value}>{option.label}</option>
                   })}
                 </select>)
+              } else if (filter.frontend_input === 'price') {
+                field = (<ReactBootstrapSlider max={filter.maxValue} min={filter.minValue} range={true} value={[
+                  self.state.currentFilters[filter.attribute] ? self.state.currentFilters[filter.attribute][0] : filter.minValue,
+                  self.state.currentFilters[filter.attribute] ? self.state.currentFilters[filter.attribute][1] : filter.maxValue
+                ]} slideStop={(event) => self.changePrice(filter.attribute, event)}/>)
               }
 
               return <div className="panel panel-default sidebar-menu" key={filter.attribute}>
@@ -192,6 +251,13 @@ export default class ProductList extends React.Component {
             </div>
             <div className="row products">
               {productsToShow.map(function(product) {
+                let price = 'No price'
+                product.filterableValues.forEach((filterableValue) => {
+                  if (filterableValue.attribute === 'price') {
+                    price = filterableValue.value
+                  }
+                })
+
                 return <div className="col-md-4 col-sm-6" key={product.id}>
                   <div className="product">
                     <div className="flip-container">
@@ -221,7 +287,7 @@ export default class ProductList extends React.Component {
                     </div>
                     <div className="text">
                       <h3><a href={"/"+product.urlKey}>{product.name}</a></h3>
-                      <p className="price">{product.filterableValues.price}</p>
+                      <p className="price">{price}</p>
                       <p className="buttons">
                         <Link to={"/"+product.urlKey} className="btn btn-default">View
                           detail</Link>
