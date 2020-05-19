@@ -12,12 +12,20 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       allPages: [],
-      allCategories: []
+      allCategories: [],
+      config: {}
     };
   }
 
   componentDidMount() {
     var self = this;
+    getConfig()
+      .then(function(response) {
+        return response.json()
+      }).then(function(result) {
+        self.setState({'config': result})
+      })
+    ;
     getAllPages()
       .then(function(response) {
         return response.json()
@@ -37,11 +45,11 @@ export default class App extends React.Component {
   routeComponent(page) {
     switch (page.type) {
       case 'category':
-        return <ProductList key={page.url_key}/>
+        return <ProductList key={page.url_key} config={this.state.config}/>
       case 'product':
-        return <Product key={page.url_key}/>
+        return <Product key={page.url_key} config={this.state.config}/>
       default:
-        return <Home/>
+        return <Home config={this.state.config}/>
     }
   }
 
@@ -264,4 +272,12 @@ function getMenu() {
   var myHeaders = new Headers();
   myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
   return fetch('/__internal/source-magento2/menu?frontUrl', {headers: myHeaders});
+}
+
+function getConfig() {
+  var myHeaders = new Headers();
+  myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+  var path = window.location.pathname;
+
+  return fetch('/__internal/source-magento2/config', {headers: myHeaders});
 }

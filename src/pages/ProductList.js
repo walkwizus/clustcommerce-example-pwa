@@ -10,6 +10,7 @@ export default class ProductList extends React.Component {
     super(props);
     this.state = {
       path: null,
+      config: props.config,
       allProducts: [],
       products: [],
       applicableFilters: [],
@@ -335,7 +336,7 @@ export default class ProductList extends React.Component {
                     </div>
                     <div className="text">
                       <h3><a href={"/"+product.urlKey}>{product.name}</a></h3>
-                      <p className="price">{price}</p>
+                      <p className="price">{price} {price !== 'No price' ? self.state.config.currency_symbol : ''}</p>
                       <p className="buttons">
                         <Link to={"/"+product.urlKey} className="btn btn-default">View
                           detail</Link>
