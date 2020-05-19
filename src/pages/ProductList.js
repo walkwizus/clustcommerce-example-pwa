@@ -135,6 +135,16 @@ export default class ProductList extends React.Component {
         return filterableValues[applicableFilter.attribute].includes(filterValue.value)
       })
 
+      let counts = {};
+      for (let i = 0; i < filterableValues[applicableFilter.attribute].length; i++) {
+        let num = filterableValues[applicableFilter.attribute][i];
+        counts[num] = counts[num] ? counts[num] + 1 : 1;
+      }
+
+      filter.options.forEach((filterValue) => {
+        filterValue.count = counts[filterValue.value]
+      })
+
       filters.push(filter);
     })
 
@@ -147,6 +157,7 @@ export default class ProductList extends React.Component {
     this.filterProducts()
   }
 
+  // onChange on a select
   switchSelectFilter(event) {
     this.state.currentFilters[event.target.name] = [event.target.value]
 
@@ -157,6 +168,33 @@ export default class ProductList extends React.Component {
     this.filterProducts()
   }
 
+  // onChange on checkbox
+  switchCheckbox(event) {
+    if (!this.state.currentFilters[event.target.name]) {
+      this.state.currentFilters[event.target.name] = [event.target.value]
+    } else {
+      let valueFound = false
+      for (let i = 0; i < this.state.currentFilters[event.target.name].length; i++) {
+        if (this.state.currentFilters[event.target.name][i] === event.target.value) {
+          valueFound = true;
+          this.state.currentFilters[event.target.name].splice(i, 1);
+
+          if (this.state.currentFilters[event.target.name].length === 0) {
+            delete this.state.currentFilters[event.target.name];
+          }
+          break;
+        }
+      }
+
+      if (!valueFound) {
+        this.state.currentFilters[event.target.name].push(event.target.value)
+      }
+    }
+
+    this.filterProducts()
+  }
+
+  // onChange price
   changePrice(filterName, event) {
     this.state.currentFilters[filterName] = event.target.value
 
@@ -189,12 +227,22 @@ export default class ProductList extends React.Component {
 
               let field = '';
               if (filter.frontend_input === 'select') {
-                field = (<select class="form-control" name={filter.attribute} onChange={self.switchSelectFilter.bind(self)} value={self.state.currentFilters[filter.attribute] ? self.state.currentFilters[filter.attribute] : null}>
-                  <option value="CLUST_NONE_VALUE" key="CLUST_NONE_VALUE" selected={!self.state.currentFilters[filter.attribute]}>-</option>
+                field = (<div>
                   {filter.options.map((option) => {
-                    return <option value={option.value} key={option.value} selected={self.state.currentFilters[filter.attribute] && self.state.currentFilters[filter.attribute] === filter.value}>{option.label}</option>
+                    return (<div className="checkbox" key={option.value}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name={filter.attribute}
+                          value={option.value}
+                          checked={self.state.currentFilters[filter.attribute] && self.state.currentFilters[filter.attribute].includes(option.value)}
+                          onChange={self.switchCheckbox.bind(self)}
+                        />
+
+                        {option.label} ({option.count})
+                      </label></div>)
                   })}
-                </select>)
+                </div>)
               } else if (filter.frontend_input === 'price') {
                 field = (<ReactBootstrapSlider max={filter.maxValue} min={filter.minValue} range={true} value={[
                   self.state.currentFilters[filter.attribute] ? self.state.currentFilters[filter.attribute][0] : filter.minValue,
