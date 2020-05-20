@@ -256,7 +256,7 @@ export default class ProductList extends React.Component {
                   <h3 className="panel-title">
                     {filter.label}
                     {self.state.currentFilters[filter.attribute]
-                      ? (<a className="btn btn-sm btn-danger pull-right" onClick={() => {self.clearFilter(filter.attribute)}}>
+                      ? (<a className="btn btn-xs btn-danger pull-right" onClick={() => {self.clearFilter(filter.attribute)}}>
                         <i className="fa fa-times-circle"></i> Clear
                       </a>)
                       : ''

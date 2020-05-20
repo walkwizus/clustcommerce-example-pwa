@@ -6,6 +6,7 @@ import {
   Link
 } from "react-router-dom";
 import ProductList from "./pages/ProductList";
+import Product from "./pages/Product";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -226,40 +227,6 @@ function Home() {
       <h2>Home</h2>
     </div>
   </div>;
-}
-
-class Product extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {product: {}};
-  }
-
-  componentDidMount() {
-    var self = this;
-    getPageContent()
-        .then(function(response) {
-          return response.json()
-        }).then(function (result) {
-      self.setState({'product': result});
-    })
-    ;
-  }
-
-  render() {
-    return <div>
-      <div>
-        {this.state.product.name}
-      </div>
-    </div>;
-  }
-}
-
-function getPageContent() {
-  var myHeaders = new Headers();
-  myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
-  var path = window.location.pathname;
-
-  return fetch('/__internal/page-content?urlKey=' + path.substr(1), {headers: myHeaders});
 }
 
 function getAllPages() {
