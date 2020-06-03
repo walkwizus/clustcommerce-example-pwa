@@ -7,14 +7,15 @@ import {
 } from "react-router-dom";
 import ProductList from "./pages/ProductList";
 import Product from "./pages/Product";
+import { connect } from 'react-redux'
 
-export default class App extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       allPages: [],
       allCategories: [],
-      config: {}
+      config: {},
     };
   }
 
@@ -162,7 +163,7 @@ export default class App extends React.Component {
                 <a className="btn btn-default navbar-toggle" href="basket.html">
                   <i className="fa fa-shopping-cart"></i>
                   <span className="hidden-xs">
-                    0 item in cart
+                    {this.props.cart.items.length} item in cart
                   </span>
                 </a>
               </div>
@@ -176,7 +177,7 @@ export default class App extends React.Component {
               <div className="navbar-collapse collapse right" id="basket-overview">
                 <a href="/cart" className="btn btn-primary navbar-btn"><i className="fa fa-shopping-cart"></i>
                   <span className="hidden-sm" data-contains="cart-items-header">
-                    0 item in cart
+                    {this.props.cart.items.length} item in cart
                   </span>
                 </a>
               </div>
@@ -222,7 +223,7 @@ export default class App extends React.Component {
 }
 
 function Home() {
-  return <div>
+  return <div className={"container"}>
     <div>
       <h2>Home</h2>
     </div>
@@ -248,3 +249,7 @@ function getConfig() {
 
   return fetch('/__internal/source-magento2/config', {headers: myHeaders});
 }
+
+export default connect(
+  (state) => { return {cart: state.app.cart} }
+)(App);

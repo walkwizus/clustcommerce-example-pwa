@@ -2,8 +2,11 @@ import React from "react";
 import {
   Link
 } from "react-router-dom";
+import { connect } from 'react-redux'
+import { cartUpdated } from '../redux/actions'
+import cartHelper from '../helpers/cart';
 
-export default class Product extends React.Component {
+class Product extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -21,6 +24,15 @@ export default class Product extends React.Component {
       self.setState({'product': result});
     })
     ;
+  }
+
+  addToCart() {
+    let self = this;
+    cartHelper.addProductToCart(self.state.product.sku, 1).then(() => {
+      console.log('ok3');
+
+      self.props.onCartUpdated()
+    });
   }
 
   buildRelatedHtml(label, products) {
@@ -101,14 +113,12 @@ export default class Product extends React.Component {
                 <h1 className="text-center">{this.state.product.name}</h1>
                 <p className="price">{this.state.product.price} {this.state.product.price ? this.state.config.currency_symbol : ''}</p>
                 <p className="text-center buttons">
-                  <form id="addToCart" method="post" action="/cart">
-                    <div className="product-configurable-attributes">
+                  <div className="product-configurable-attributes">
 
-                    </div>
-                    <button type="submit" className="btn btn-primary" id="add-to-cart"><i
-                      className="fa fa-shopping-cart"></i> Add to cart
-                    </button>
-                  </form>
+                  </div>
+                  <button type="submit" className="btn btn-primary" id="add-to-cart" onClick={this.addToCart.bind(this)}><i
+                    className="fa fa-shopping-cart"></i> Add to cart
+                  </button>
                 </p>
               </div>
 
@@ -160,3 +170,10 @@ function getPageContent() {
 
   return fetch('/__internal/page-content?urlKey=' + path.substr(1), {headers: myHeaders});
 }
+
+export default connect(
+  null,
+  (dispatch) => {
+    return { onCartUpdated: () => { dispatch(cartUpdated()) } }
+  }
+)(Product)
