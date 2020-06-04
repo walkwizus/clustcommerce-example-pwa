@@ -7,6 +7,9 @@ import {
 } from "react-router-dom";
 import ProductList from "./pages/ProductList";
 import Product from "./pages/Product";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import { configUpdated } from "./redux/actions";
 import { connect } from 'react-redux'
 
 class App extends React.Component {
@@ -26,6 +29,7 @@ class App extends React.Component {
         return response.json()
       }).then(function(result) {
         self.setState({'config': result})
+        self.props.configUpdated(result);
       })
     ;
     getAllPages()
@@ -160,12 +164,12 @@ class App extends React.Component {
                   <span className="sr-only">Toggle search</span>
                   <i className="fa fa-search"></i>
                 </button>
-                <a className="btn btn-default navbar-toggle" href="basket.html">
+                <Link className="btn btn-default navbar-toggle" to={"/cart"}>
                   <i className="fa fa-shopping-cart"></i>
                   <span className="hidden-xs">
                     {this.props.cart.items.length} item in cart
                   </span>
-                </a>
+                </Link>
               </div>
             </div>
             <div className="navbar-collapse collapse" id="navigation">
@@ -175,11 +179,11 @@ class App extends React.Component {
             </div>
             <div className="navbar-buttons">
               <div className="navbar-collapse collapse right" id="basket-overview">
-                <a href="/cart" className="btn btn-primary navbar-btn"><i className="fa fa-shopping-cart"></i>
+                <Link to={"/cart"} className="btn btn-primary navbar-btn"><i className="fa fa-shopping-cart"></i>
                   <span className="hidden-sm" data-contains="cart-items-header">
                     {this.props.cart.items.length} item in cart
                   </span>
-                </a>
+                </Link>
               </div>
               <div className="navbar-collapse collapse right" id="search-not-mobile">
                 <button type="button" className="btn navbar-btn btn-primary" data-toggle="collapse"
@@ -210,6 +214,8 @@ class App extends React.Component {
               return <Route path={'/'+ page.url_key} render={() => self.routeComponent(page)}/>
             })}
 
+            <Route path="/cart" render={() => <Cart config={self.state.config}/> }/>
+            <Route path="/checkout" render={() => <Checkout config={self.state.config}/> }/>
             <Route path="/" onChange={self.componentDidMount}>
               <Home />
             </Route>
@@ -251,5 +257,10 @@ function getConfig() {
 }
 
 export default connect(
-  (state) => { return {cart: state.app.cart} }
+  (state) => { return {cart: state.app.cart} },
+  (dispatch) => {
+    return {
+      configUpdated: (config) => dispatch(configUpdated(config))
+    }
+  }
 )(App);

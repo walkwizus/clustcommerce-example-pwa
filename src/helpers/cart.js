@@ -36,10 +36,9 @@ let helper = {
         headers: myHeaders,
         body: JSON.stringify({sku: sku, qty: qty})
       }).then(function(response) {
-        console.log('ok');
         return response.json();
       }).then(function(data) {
-        console.log('ok2');
+        cache.set('CLUST_CART', data.cart);
 
         if (!data.error) {
           cache.set('CLUST_CART', data.cart);

@@ -29,8 +29,6 @@ class Product extends React.Component {
   addToCart() {
     let self = this;
     cartHelper.addProductToCart(self.state.product.sku, 1).then(() => {
-      console.log('ok3');
-
       self.props.onCartUpdated()
     });
   }
