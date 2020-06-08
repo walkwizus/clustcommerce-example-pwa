@@ -16,6 +16,12 @@ let helper = {
 
     return cart;
   },
+  setAddress: (address) => {
+    cache.set('CLUST_CHECKOUT_ADDRESS', address);
+  },
+  getAddress() {
+    return cache.get('CLUST_CHECKOUT_ADDRESS');
+  },
   addProductToCart: (sku, qty) => {
     const cart = helper.getCart();
     const customer = customerHelper.getCurrentCustomer()
@@ -46,6 +52,33 @@ let helper = {
         } else {
           reject(data.error);
         }
+      });
+    });
+  },
+  getShippingMethods: (address) => {
+    const cart = helper.getCart();
+    const customer = customerHelper.getCurrentCustomer()
+    const customerToken = customer !== null ? customer.authToken : '';
+
+    const url = cart.cartToken !== null && cart.cartToken !== undefined
+      ? '/__internal/source-magento2/shipping-methods?cartToken=' + cart.cartToken + '&customerToken=' + customerToken
+      : '/__internal/source-magento2/shipping-methods?customerToken=' + customerToken
+
+    var myHeaders = new Headers();
+    myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+    myHeaders.append('accept', 'application/json');
+    myHeaders.append('content-type', 'application/json');
+
+    let addr = {...address}
+    addr.street = [addr.street];
+
+    return new Promise((resolve, reject) => {
+      fetch(url, {
+        method: 'post',
+        headers: myHeaders,
+        body: JSON.stringify(addr)
+      }).then(function (response) {
+        resolve(response.json());
       });
     });
   }
