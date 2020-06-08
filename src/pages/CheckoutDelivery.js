@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import cartHelper from '../helpers/cart';
 import OrderNavigation from '../components/OrderNavigation';
 import OrderSummary from '../components/OrderSummary';
+import {cartUpdated} from "../redux/actions";
 
 class CheckoutDelivery extends React.Component {
   constructor(props) {
@@ -19,9 +20,14 @@ class CheckoutDelivery extends React.Component {
   componentDidMount() {
     cartHelper.getShippingMethods(cartHelper.getAddress()).then((methods) => {
       this.setState({shippingMethods: methods});
-
-      console.log(methods);
     })
+  }
+
+  selectShipping(carrierCode, methodCode) {
+    var self = this;
+    cartHelper.setShippingInformations(cartHelper.getAddress(), methodCode, carrierCode).then(() => {
+      self.props.onCartUpdated()
+    });
   }
 
   render() {
@@ -46,14 +52,14 @@ class CheckoutDelivery extends React.Component {
                     <div className="box shipping-method">
 
                       <h4>{shippingMethod.carrier_title}</h4>
-                      <p>Price : {shippingMethod.price_incl_tax} {this.props.config.currency_symbol}</p>
+                      <p>Price : {shippingMethod.price_incl_tax.toFixed(2)} {this.props.config.currency_symbol}</p>
 
                       <div className="box-footer text-center">
                         <input
                           type="radio"
                           name="shipping_carrier_code"
-                          value={shippingMethod.carrier_code}
                           required
+                          onClick={(e) => {this.selectShipping(shippingMethod.carrier_code, shippingMethod.method_code)}}
                         />
                       </div>
                     </div>
@@ -83,5 +89,8 @@ class CheckoutDelivery extends React.Component {
 }
 
 export default connect(
-  (state) => { return {config: state.app.config ? state.app.config : {}} }
+  (state) => { return {config: state.app.config ? state.app.config : {}} },
+  (dispatch) => {
+    return { onCartUpdated: () => { dispatch(cartUpdated()) } }
+  }
 )(CheckoutDelivery)

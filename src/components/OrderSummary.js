@@ -19,26 +19,26 @@ class OrderSummary extends React.Component {
         <table className="table">
           <tbody>
           <tr>
-            <td>Order subtotal</td>
-            <th>{this.props.cart.base_subtotal} {this.props.config.currency_symbol}</th>
+            <td style={{width: "55%"}}>Order subtotal</td>
+            <th>{this.props.cart.base_subtotal.toFixed(2)} {this.props.config.currency_symbol}</th>
           </tr>
           <tr>
             <td>Shipping and handling</td>
-            <th>{this.props.cart.shipping_amount} {this.props.config.currency_symbol}</th>
+            <th>{this.props.cart.shipping_amount.toFixed(2)} {this.props.config.currency_symbol}</th>
           </tr>
           <tr>
             <td>Tax</td>
-            <th>{this.props.cart.tax_amount} {this.props.config.currency_symbol}</th>
+            <th>{this.props.cart.tax_amount.toFixed(2)} {this.props.config.currency_symbol}</th>
           </tr>
           {this.props.cart.discount_amount ?
             (<tr>
               <td>Discount</td>
-              <th>{this.props.cart.discount_amount} {this.props.config.currency_symbol}</th>
+              <th>{this.props.cart.discount_amount.toFixed(2)} {this.props.config.currency_symbol}</th>
             </tr>) : ''
           }
           <tr className="total">
             <td>Total</td>
-            <th>{this.props.cart.grand_total} {this.props.config.currency_symbol}</th>
+            <th>{this.props.cart.grand_total.toFixed(2)} {this.props.config.currency_symbol}</th>
           </tr>
           </tbody>
         </table>

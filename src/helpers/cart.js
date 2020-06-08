@@ -81,6 +81,42 @@ let helper = {
         resolve(response.json());
       });
     });
+  },
+  setShippingInformations: (address, shippingMethodCode, shippingCarrierCode) => {
+    const cart = helper.getCart();
+    const customer = customerHelper.getCurrentCustomer()
+    const customerToken = customer !== null ? customer.authToken : '';
+
+    const url = cart.cartToken !== null && cart.cartToken !== undefined
+      ? '/__internal/source-magento2/shipping-information?cartToken=' + cart.cartToken + '&customerToken=' + customerToken
+      : '/__internal/source-magento2/shipping-information?customerToken=' + customerToken
+
+    var myHeaders = new Headers();
+    myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+    myHeaders.append('accept', 'application/json');
+    myHeaders.append('content-type', 'application/json');
+
+    let addr = {...address}
+    addr.street = [addr.street];
+
+    return new Promise((resolve, reject) => {
+      fetch(url, {
+        method: 'post',
+        headers: myHeaders,
+        body: JSON.stringify({
+          shipping_address: addr,
+          billing_address: addr,
+          shipping_method_code: shippingMethodCode,
+          shipping_carrier_code: shippingCarrierCode
+        })
+      }).then(function(response) {
+        return response.json();
+      }).then(function(data) {
+        cache.set('CLUST_CART', data.cart);
+
+        resolve();
+      });
+    });
   }
 }
 

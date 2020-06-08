@@ -63,7 +63,7 @@ class Product extends React.Component {
             </Link>
             <div className="text">
               <h3>{product.name}</h3>
-              <p className="price">{product.price} {product.price ? this.state.config.currency_symbol : ''}</p>
+              <p className="price">{product.price ? product.price.toFixed(2) : ''} {product.price ? this.state.config.currency_symbol : ''}</p>
             </div>
           </div>
         </div>)
