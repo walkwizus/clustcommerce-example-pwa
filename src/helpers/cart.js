@@ -16,11 +16,17 @@ let helper = {
 
     return cart;
   },
+  setCart: (cart) => {
+    cache.set('CLUST_CART', cart);
+  },
   setAddress: (address) => {
     cache.set('CLUST_CHECKOUT_ADDRESS', address);
   },
-  getAddress() {
+  getAddress: () => {
     return cache.get('CLUST_CHECKOUT_ADDRESS');
+  },
+  getLastOrder: () => {
+    return cache.get('CLUST_LAST_ORDER');
   },
   addProductToCart: (sku, qty) => {
     const cart = helper.getCart();
@@ -112,7 +118,51 @@ let helper = {
       }).then(function(response) {
         return response.json();
       }).then(function(data) {
+        data.cart.shipping = {
+          methodCode: shippingMethodCode,
+          carrierCode: shippingCarrierCode
+        }
+
+        data.cart.paymentMethods = data.paymentMethods
+
         cache.set('CLUST_CART', data.cart);
+
+        resolve();
+      });
+    });
+  },
+  placeOrder: (paymentMethod) => {
+    const cart = helper.getCart();
+    const customer = customerHelper.getCurrentCustomer()
+    const customerToken = customer !== null ? customer.authToken : '';
+
+    const url = cart.cartToken !== null && cart.cartToken !== undefined
+      ? '/__internal/source-magento2/place-order?cartToken=' + cart.cartToken + '&customerToken=' + customerToken
+      : '/__internal/source-magento2/place-order?customerToken=' + customerToken
+
+    var myHeaders = new Headers();
+    myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+    myHeaders.append('accept', 'application/json');
+    myHeaders.append('content-type', 'application/json');
+
+    let addr = {...helper.getAddress()}
+    addr.street = [addr.street];
+
+    return new Promise((resolve, reject) => {
+      fetch(url, {
+        method: 'post',
+        headers: myHeaders,
+        body: JSON.stringify({
+          email: addr.email,
+          paymentMethod: {method: paymentMethod},
+          billingAddress: addr
+        })
+      }).then(function(response) {
+        return response.json();
+      }).then(function(data) {
+        cache.remove('CLUST_CART');
+        cache.remove('CLUST_CHECKOUT_ADDRESS');
+        cache.set('CLUST_LAST_ORDER', data)
 
         resolve();
       });

@@ -49,7 +49,7 @@ class Checkout extends React.Component {
   }
 
   prefillAddress(props) {
-    let state = {};
+    let state = this.state;
 
     let address = cartHelper.getAddress()
     if (address) {
@@ -97,7 +97,7 @@ class Checkout extends React.Component {
     var self = this;
     var errors = this.state.errors;
     let hasError = false;
-    ['firstname', 'lastname', 'street', 'postcode', 'country_id', 'city', 'region_id', 'email'].forEach((field) => {
+    ['firstname', 'lastname', 'street', 'postcode', 'country_id', 'city', 'region_id', 'email', 'telephone'].forEach((field) => {
       if (!self.state.address[field]) {
         errors[field] = 'This field is mandatory'
         hasError = true;

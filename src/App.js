@@ -10,6 +10,8 @@ import Product from "./pages/Product";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import CheckoutDelivery from "./pages/CheckoutDelivery";
+import CheckoutPayment from "./pages/CheckoutPayment";
+import CheckoutSummary from "./pages/CheckoutSummary";
 import { configUpdated } from "./redux/actions";
 import { connect } from 'react-redux'
 
@@ -217,6 +219,8 @@ class App extends React.Component {
 
             <Route path="/cart" render={() => <Cart config={self.state.config}/> }/>
             <Route path="/checkout-shipping" render={() => <CheckoutDelivery config={self.state.config}/> }/>
+            <Route path="/checkout-payment" render={() => <CheckoutPayment config={self.state.config}/> }/>
+            <Route path="/checkout-summary" render={() => <CheckoutSummary config={self.state.config}/> }/>
             <Route path="/checkout" render={() => <Checkout config={self.state.config}/> }/>
             <Route path="/" onChange={self.componentDidMount}>
               <Home />

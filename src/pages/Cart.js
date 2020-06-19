@@ -58,7 +58,7 @@ class Cart extends React.Component {
                 <tfoot>
                   <tr>
                     <th colSpan="5">Total</th>
-                    <th colSpan="2">$446.00</th>
+                    <th colSpan="2">{this.props.cart.grand_total} {this.props.config.currency_symbol}</th>
                   </tr>
                 </tfoot>
               </table>
