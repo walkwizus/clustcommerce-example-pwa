@@ -12,6 +12,7 @@ import Checkout from "./pages/Checkout";
 import CheckoutDelivery from "./pages/CheckoutDelivery";
 import CheckoutPayment from "./pages/CheckoutPayment";
 import CheckoutSummary from "./pages/CheckoutSummary";
+import Login from "./pages/Login";
 import { configUpdated } from "./redux/actions";
 import { connect } from 'react-redux'
 
@@ -142,8 +143,7 @@ class App extends React.Component {
             </div>
             <div className="col-md-6" data-animate="fadeInDown">
               <ul className="menu">
-                <li><a href="#" data-toggle="modal" data-target="#login-modal">Login</a></li>
-                <li><a href="#">Register</a></li>
+                <li><Link to={"/login"}>Login / Register</Link></li>
                 <li><a href="#">Contact</a></li>
               </ul>
             </div>
@@ -222,6 +222,7 @@ class App extends React.Component {
             <Route path="/checkout-payment" render={() => <CheckoutPayment config={self.state.config}/> }/>
             <Route path="/checkout-summary" render={() => <CheckoutSummary config={self.state.config}/> }/>
             <Route path="/checkout" render={() => <Checkout config={self.state.config}/> }/>
+            <Route path="/login" render={() => <Login config={self.state.config}/> }/>
             <Route path="/" onChange={self.componentDidMount}>
               <Home />
             </Route>

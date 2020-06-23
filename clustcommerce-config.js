@@ -26,4 +26,5 @@ module.exports.init = function(utils, config) {
     app.get('/checkout-shipping', function (req, res) { res.sendFile(process.cwd() +'/build/index.html'); })
     app.get('/checkout-payment', function (req, res) { res.sendFile(process.cwd() +'/build/index.html'); })
     app.get('/checkout-summary', function (req, res) { res.sendFile(process.cwd() +'/build/index.html'); })
+    app.get('/login', function (req, res) { res.sendFile(process.cwd() +'/build/index.html'); })
 }

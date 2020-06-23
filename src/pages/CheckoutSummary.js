@@ -14,9 +14,7 @@ class CheckoutSummary extends React.Component {
   }
 
   componentWillMount() {
-    console.log(cartHelper.getLastOrder());
     this.setState({order: cartHelper.getLastOrder()})
-    console.log(this.state.order);
   }
 
   render() {
