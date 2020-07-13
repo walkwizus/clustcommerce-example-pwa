@@ -1,8 +1,12 @@
 import cache from "../tools/cache";
+import customerHelper from "./customer"
 
 export default {
   getCurrentCustomer: () => {
     return cache.get('CLUST_CUSTOMER');
+  },
+  logout: () => {
+    cache.remove('CLUST_CUSTOMER');
   },
   login: (username, password) => {
     const url = '/__internal/source-magento2/login';
@@ -61,6 +65,58 @@ export default {
           return;
         }
         
+        cache.set('CLUST_CUSTOMER', data)
+        resolve(data);
+      });
+    });
+  },
+  update: (customer) => {
+    const customerToken = customerHelper.getCurrentCustomer().customerToken;
+
+    var myHeaders = new Headers();
+    myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+    myHeaders.append('accept', 'application/json');
+    myHeaders.append('content-type', 'application/json');
+
+    return new Promise((resolve, reject) => {
+      fetch("/__internal/source-magento2/account/update?customerToken=" + customerToken, {
+        method: 'post',
+        headers: myHeaders,
+        body: JSON.stringify({customer: customer})
+      }).then(function (response) {
+        return response.json();
+      }).then(function(data) {
+        if (data.error) {
+          reject(data.error)
+          return;
+        }
+
+        cache.set('CLUST_CUSTOMER', data)
+        resolve(data);
+      });
+    });
+  },
+  updatePassword: (passwords) => {
+    const customerToken = customerHelper.getCurrentCustomer().customerToken;
+
+    var myHeaders = new Headers();
+    myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+    myHeaders.append('accept', 'application/json');
+    myHeaders.append('content-type', 'application/json');
+
+    return new Promise((resolve, reject) => {
+      fetch("/__internal/source-magento2/account/update-password?customerToken=" + customerToken, {
+        method: 'post',
+        headers: myHeaders,
+        body: JSON.stringify(passwords)
+      }).then(function (response) {
+        return response.json();
+      }).then(function(data) {
+        if (data.error) {
+          reject(data.error)
+          return;
+        }
+
         cache.set('CLUST_CUSTOMER', data)
         resolve(data);
       });

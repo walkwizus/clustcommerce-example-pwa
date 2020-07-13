@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import { connect } from 'react-redux'
 import customerHelper from "../helpers/customer";
+import {customerUpdated} from "../redux/actions";
 
 class Login extends React.Component {
   constructor(props) {
@@ -69,7 +70,8 @@ class Login extends React.Component {
         this.state.loginForm.username,
         this.state.loginForm.password,
       ).then((customer) => {
-        console.log('success', customer);
+        self.props.loginSuccess();
+        this.setState({'redirect': '/account'});
       }).catch((err) => {
         this.setState({errorMessage: err});
       });
@@ -96,11 +98,10 @@ class Login extends React.Component {
         this.state.registerForm.email,
         this.state.registerForm.password
       ).then((customer) => {
-        console.log('success', customer);
+        this.setState({'redirect': '/account'});
       }).catch((err) => {
         this.setState({errorMessage: err});
       });
-      //this.setState({'redirect': '/checkout-shipping'});
     }
   }
 
@@ -244,4 +245,7 @@ class Login extends React.Component {
   }
 }
 
-export default connect()(Login)
+export default connect((state) => {},
+  (dispatch) => {
+    return { loginSuccess: () => { dispatch(customerUpdated()) } }
+  })(Login)

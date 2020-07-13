@@ -15,6 +15,7 @@ import CheckoutSummary from "./pages/CheckoutSummary";
 import Login from "./pages/Login";
 import { configUpdated } from "./redux/actions";
 import { connect } from 'react-redux'
+import Account from "./pages/Account";
 
 class App extends React.Component {
   constructor(props) {
@@ -143,7 +144,10 @@ class App extends React.Component {
             </div>
             <div className="col-md-6" data-animate="fadeInDown">
               <ul className="menu">
-                <li><Link to={"/login"}>Login / Register</Link></li>
+                {this.props.customer
+                  ? <li><Link to={"/account"}>Hello {self.props.customer.firstname}</Link></li>
+                  : <li><Link to={"/login"}>Login / Register</Link></li>
+                }
                 <li><a href="#">Contact</a></li>
               </ul>
             </div>
@@ -223,6 +227,7 @@ class App extends React.Component {
             <Route path="/checkout-summary" render={() => <CheckoutSummary config={self.state.config}/> }/>
             <Route path="/checkout" render={() => <Checkout config={self.state.config}/> }/>
             <Route path="/login" render={() => <Login config={self.state.config}/> }/>
+            <Route path="/account" render={() => <Account config={self.state.config}/> }/>
             <Route path="/" onChange={self.componentDidMount}>
               <Home />
             </Route>
@@ -264,7 +269,7 @@ function getConfig() {
 }
 
 export default connect(
-  (state) => { return {cart: state.app.cart} },
+  (state) => { return {cart: state.app.cart, customer: state.app.customer} },
   (dispatch) => {
     return {
       configUpdated: (config) => dispatch(configUpdated(config))

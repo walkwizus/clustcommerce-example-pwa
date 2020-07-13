@@ -1,6 +1,6 @@
 import cartHelper from '../helpers/cart';
 import customerHelper from '../helpers/customer';
-import { CART_UPDATED, CONFIG_UPDATED } from "./actions";
+import { CART_UPDATED, CONFIG_UPDATED, CUSTOMER_UPDATED } from "./actions";
 import { combineReducers } from 'redux'
 
 const initialState = {
@@ -12,6 +12,8 @@ function app(state = initialState, action) {
   switch (action.type) {
     case CART_UPDATED:
       return {...state, cart: cartHelper.getCart()}
+    case CUSTOMER_UPDATED:
+      return {...state, customer: customerHelper.getCurrentCustomer()}
     case CONFIG_UPDATED:
       return {...state, config: action.config}
     default:
