@@ -47,9 +47,9 @@ class Cart extends React.Component {
                     <td>
                       <input type="number" value={item.qty} className="form-control"/>
                     </td>
-                    <td>{item.price_incl_tax} {this.props.config.currency_symbol}</td>
-                    <td>{item.discount_amount} {this.props.config.currency_symbol}</td>
-                    <td>{item.base_row_total_incl_tax} {this.props.config.currency_symbol}</td>
+                    <td>{this.props.config.currency_symbol}{item.price_incl_tax}</td>
+                    <td>{this.props.config.currency_symbol}{item.discount_amount}</td>
+                    <td>{this.props.config.currency_symbol}{item.base_row_total_incl_tax}</td>
                     <td><a href="#"><i className="fa fa-trash-o"></i></a>
                     </td>
                   </tr>)
@@ -58,7 +58,7 @@ class Cart extends React.Component {
                 <tfoot>
                   <tr>
                     <th colSpan="5">Total</th>
-                    <th colSpan="2">{this.props.cart.grand_total} {this.props.config.currency_symbol}</th>
+                    <th colSpan="2">{this.props.config.currency_symbol}{this.props.cart.grand_total}</th>
                   </tr>
                 </tfoot>
               </table>

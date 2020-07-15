@@ -37,6 +37,32 @@ export default {
       });
     });
   },
+  getOrders: () => {
+    const url = '/__internal/source-magento2/account/orders';
+    const customerToken = customerHelper.getCurrentCustomer().customerToken;
+
+    var myHeaders = new Headers();
+    myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+    myHeaders.append('x-clustcommerce-magento-customer-token', customerToken);
+    myHeaders.append('accept', 'application/json');
+    myHeaders.append('content-type', 'application/json');
+
+    return new Promise((resolve, reject) => {
+      fetch(url, {
+        method: 'get',
+        headers: myHeaders
+      }).then(function (response) {
+        return response.json();
+      }).then(function(data) {
+        if (data.error) {
+          reject(data.error)
+          return;
+        }
+
+        resolve(data.items);
+      });
+    });
+  },
   register: (firstname, lastname, email, password) => {
     const url = '/__internal/source-magento2/register';
 
@@ -75,11 +101,12 @@ export default {
 
     var myHeaders = new Headers();
     myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+    myHeaders.append('x-clustcommerce-magento-customer-token', customerToken);
     myHeaders.append('accept', 'application/json');
     myHeaders.append('content-type', 'application/json');
 
     return new Promise((resolve, reject) => {
-      fetch("/__internal/source-magento2/account/update?customerToken=" + customerToken, {
+      fetch("/__internal/source-magento2/account/update", {
         method: 'post',
         headers: myHeaders,
         body: JSON.stringify({customer: customer})
@@ -101,11 +128,12 @@ export default {
 
     var myHeaders = new Headers();
     myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+    myHeaders.append('x-clustcommerce-magento-customer-token', customerToken);
     myHeaders.append('accept', 'application/json');
     myHeaders.append('content-type', 'application/json');
 
     return new Promise((resolve, reject) => {
-      fetch("/__internal/source-magento2/account/update-password?customerToken=" + customerToken, {
+      fetch("/__internal/source-magento2/account/update-password", {
         method: 'post',
         headers: myHeaders,
         body: JSON.stringify(passwords)

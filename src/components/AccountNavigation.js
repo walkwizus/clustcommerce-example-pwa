@@ -40,7 +40,7 @@ class AccountNavigation extends React.Component {
             <Link to={"/account/orders"}><i className="fa fa-list"></i> My orders</Link>
           </li>
           <li className={this.state.active === "account" ? "active" : ""}>
-            <Link to={"/account/account"}><i className="fa fa-user"></i> My account</Link>
+            <Link to={"/account"}><i className="fa fa-user"></i> My account</Link>
           </li>
           <li>
             <a href="" onClick={this.logout.bind(this)}><i className="fa fa-sign-out"></i> Logout</a>

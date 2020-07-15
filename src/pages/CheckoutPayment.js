@@ -20,6 +20,7 @@ class CheckoutPayment extends React.Component {
 
   payment() {
     cartHelper.placeOrder(this.state.paymentMethod).then(() => {
+      this.props.onCartUpdated()
       this.setState({redirect: '/checkout-summary'})
     })
   }

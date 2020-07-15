@@ -5,8 +5,6 @@ import {
 } from "react-router-dom";
 import { connect } from 'react-redux'
 import customerHelper from '../helpers/customer';
-import OrderNavigation from '../components/OrderNavigation';
-import OrderSummary from '../components/OrderSummary';
 import AccountNavigation from "../components/AccountNavigation";
 import {customerUpdated} from "../redux/actions";
 

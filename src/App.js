@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import { configUpdated } from "./redux/actions";
 import { connect } from 'react-redux'
 import Account from "./pages/Account";
+import Orders from "./pages/Orders";
 
 class App extends React.Component {
   constructor(props) {
@@ -227,6 +228,7 @@ class App extends React.Component {
             <Route path="/checkout-summary" render={() => <CheckoutSummary config={self.state.config}/> }/>
             <Route path="/checkout" render={() => <Checkout config={self.state.config}/> }/>
             <Route path="/login" render={() => <Login config={self.state.config}/> }/>
+            <Route path="/account/orders" render={() => <Orders config={self.state.config}/> }/>
             <Route path="/account" render={() => <Account config={self.state.config}/> }/>
             <Route path="/" onChange={self.componentDidMount}>
               <Home />

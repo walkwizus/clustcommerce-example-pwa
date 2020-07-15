@@ -5,7 +5,7 @@ export default {
   get: (key, defaultValue = null) => {
     let value = localStorage.getItem(key)
 
-    return value ? JSON.parse(value) : defaultValue;
+    return value && value !== "undefined" ? JSON.parse(value) : defaultValue;
   },
   remove: (key) => {
     localStorage.removeItem(key);

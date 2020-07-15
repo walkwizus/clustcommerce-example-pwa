@@ -31,14 +31,15 @@ let helper = {
   addProductToCart: (sku, qty) => {
     const cart = helper.getCart();
     const customer = customerHelper.getCurrentCustomer()
-    const customerToken = customer !== null ? customer.authToken : '';
+    const customerToken = customer !== null ? customer.customerToken : '';
 
     const url = cart.cartToken !== null && cart.cartToken !== undefined
-      ? '/__internal/source-magento2/add-to-cart?cartToken=' + cart.cartToken + '&customerToken=' + customerToken
-      : '/__internal/source-magento2/add-to-cart?customerToken=' + customerToken
+      ? '/__internal/source-magento2/add-to-cart?cartToken=' + cart.cartToken
+      : '/__internal/source-magento2/add-to-cart'
 
     var myHeaders = new Headers();
     myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+    myHeaders.append('x-clustcommerce-magento-customer-token', customerToken);
     myHeaders.append('accept', 'application/json');
     myHeaders.append('content-type', 'application/json');
 
@@ -50,8 +51,6 @@ let helper = {
       }).then(function(response) {
         return response.json();
       }).then(function(data) {
-        cache.set('CLUST_CART', data.cart);
-
         if (!data.error) {
           cache.set('CLUST_CART', data.cart);
           resolve();
@@ -64,14 +63,15 @@ let helper = {
   getShippingMethods: (address) => {
     const cart = helper.getCart();
     const customer = customerHelper.getCurrentCustomer()
-    const customerToken = customer !== null ? customer.authToken : '';
+    const customerToken = customer !== null ? customer.customerToken : '';
 
     const url = cart.cartToken !== null && cart.cartToken !== undefined
-      ? '/__internal/source-magento2/shipping-methods?cartToken=' + cart.cartToken + '&customerToken=' + customerToken
-      : '/__internal/source-magento2/shipping-methods?customerToken=' + customerToken
+      ? '/__internal/source-magento2/shipping-methods?cartToken=' + cart.cartToken
+      : '/__internal/source-magento2/shipping-methods'
 
     var myHeaders = new Headers();
     myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+    myHeaders.append('x-clustcommerce-magento-customer-token', customerToken);
     myHeaders.append('accept', 'application/json');
     myHeaders.append('content-type', 'application/json');
 
@@ -91,14 +91,15 @@ let helper = {
   setShippingInformations: (address, shippingMethodCode, shippingCarrierCode) => {
     const cart = helper.getCart();
     const customer = customerHelper.getCurrentCustomer()
-    const customerToken = customer !== null ? customer.authToken : '';
+    const customerToken = customer !== null ? customer.customerToken : '';
 
     const url = cart.cartToken !== null && cart.cartToken !== undefined
-      ? '/__internal/source-magento2/shipping-information?cartToken=' + cart.cartToken + '&customerToken=' + customerToken
-      : '/__internal/source-magento2/shipping-information?customerToken=' + customerToken
+      ? '/__internal/source-magento2/shipping-information?cartToken=' + cart.cartToken
+      : '/__internal/source-magento2/shipping-information'
 
     var myHeaders = new Headers();
     myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+    myHeaders.append('x-clustcommerce-magento-customer-token', customerToken);
     myHeaders.append('accept', 'application/json');
     myHeaders.append('content-type', 'application/json');
 
@@ -134,14 +135,15 @@ let helper = {
   placeOrder: (paymentMethod) => {
     const cart = helper.getCart();
     const customer = customerHelper.getCurrentCustomer()
-    const customerToken = customer !== null ? customer.authToken : '';
+    const customerToken = customer !== null ? customer.customerToken : '';
 
     const url = cart.cartToken !== null && cart.cartToken !== undefined
-      ? '/__internal/source-magento2/place-order?cartToken=' + cart.cartToken + '&customerToken=' + customerToken
-      : '/__internal/source-magento2/place-order?customerToken=' + customerToken
+      ? '/__internal/source-magento2/place-order?cartToken=' + cart.cartToken
+      : '/__internal/source-magento2/place-order'
 
     var myHeaders = new Headers();
     myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+    myHeaders.append('x-clustcommerce-magento-customer-token', customerToken);
     myHeaders.append('accept', 'application/json');
     myHeaders.append('content-type', 'application/json');
 

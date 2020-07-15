@@ -109,7 +109,7 @@ class Product extends React.Component {
             <div className="col-sm-6">
               <div className="box">
                 <h1 className="text-center">{this.state.product.name}</h1>
-                <p className="price">{this.state.product.price} {this.state.product.price ? this.state.config.currency_symbol : ''}</p>
+                <p className="price">{this.state.product.price ? this.state.config.currency_symbol : ''}{this.state.product.price}</p>
                 <p className="text-center buttons">
                   <div className="product-configurable-attributes">
 
