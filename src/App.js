@@ -271,7 +271,10 @@ function getConfig() {
 }
 
 export default connect(
-  (state) => { return {cart: state.app.cart, customer: state.app.customer} },
+  (state) => { return {
+    cart: state.app.cart,
+    customer: state.app.customer
+  } },
   (dispatch) => {
     return {
       configUpdated: (config) => dispatch(configUpdated(config))

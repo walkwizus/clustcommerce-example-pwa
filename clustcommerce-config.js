@@ -1,4 +1,5 @@
 const axios = require('axios');
+require('dotenv').config()
 
 module.exports.config = {
     modules: [
@@ -9,12 +10,12 @@ module.exports.config = {
         index: './build/index.html'
     },
     source_magento: {
-        base_url: 'http://demo.magento.local',
-        username: 'admin',
-        password: 'pwd',
-        customer_session_lifetime: 10,
+        base_url: process.env.MAGENTO2_URL,
+        username: process.env.MAGENTO2_USER,
+        password: process.env.MAGENTO2_PWD,
+        customer_session_lifetime: process.env.MAGENTO2_SESSION_LIFETIME,
         websites: [{
-            store_view_code: 'store_code',
+            store_view_code: process.env.MAGENTO2_DEFAULT_STORE_CODE,
             base_url: 'http://localhost:3334'
         }]
     }
