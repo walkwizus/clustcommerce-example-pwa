@@ -70,6 +70,10 @@ class Account extends React.Component {
     state.errorMessage = '';
     state.successMessage = '';
 
+    if (!props.customer.default_billing && props.customer.addresses.length > 0) {
+      props.customer.default_billing = props.customer.addresses[props.customer.addresses.length - 1].id
+    }
+
     props.customer.addresses.forEach((address) => {
       if (address.id === parseInt(props.customer.default_billing)) {
         state.address.firstname = address.firstname;
@@ -85,6 +89,18 @@ class Account extends React.Component {
       }
     });
 
+    if (!state.address.firstname) {
+      state.address.firstname = props.customer.firstname;
+    }
+
+    if (!state.address.lastname) {
+      state.address.lastname = props.customer.lastname;
+    }
+
+    if (!state.address.email) {
+      state.address.email = props.customer.email;
+    }
+
     props.config.allowed_countries.forEach((country) => {
       if (country.id === state.address.country_id) {
         state.availableRegions = country.available_regions;
@@ -99,14 +115,14 @@ class Account extends React.Component {
 
     for (const country_id of this.props.config.allowed_countries) {
       if (country_id.id === e.target.value) {
-        availableRegions = country_id.availableRegions;
+        availableRegions = country_id.available_regions;
         break;
       }
     }
 
     this.setState({
-      address: {...this.state.address, country_id: e.target.value},
-      availableRegions: availableRegions, region_id: ''
+      address: {...this.state.address, country_id: e.target.value, region_id: ''},
+      availableRegions: availableRegions
     });
   }
 
@@ -173,15 +189,24 @@ class Account extends React.Component {
 
     if (!hasError) {
       let newCustomer = JSON.parse(JSON.stringify(this.props.customer));
-      newCustomer.addresses.forEach((address, key) => {
-        if (address.id === parseInt(self.props.customer.default_billing)) {
-          address = {...address, ...self.state.address}
-          address.street = [address.street]
 
-          delete address.email
-          newCustomer.addresses[key] = address
-        }
-      })
+      if (newCustomer.addresses.length === 0) {
+        let address = {...self.state.address}
+        address.street = [address.street]
+
+        delete address.email
+        newCustomer.addresses.push(address);
+      } else {
+        newCustomer.addresses.forEach((address, key) => {
+          if (address.id === parseInt(self.props.customer.default_billing)) {
+            address = {...address, ...self.state.address}
+            address.street = [address.street]
+
+            delete address.email
+            newCustomer.addresses[key] = address
+          }
+        })
+      }
 
       newCustomer.email = self.state.address.email
       delete newCustomer.customerToken

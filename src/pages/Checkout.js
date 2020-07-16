@@ -75,14 +75,14 @@ class Checkout extends React.Component {
 
     for (const country_id of this.props.config.allowed_countries) {
       if (country_id.id === e.target.value) {
-        availableRegions = country_id.availableRegions;
+        availableRegions = country_id.available_regions;
         break;
       }
     }
 
     this.setState({
-      address: {...this.state.address, country_id: e.target.value},
-      availableRegions: availableRegions, region_id: ''
+      address: {...this.state.address, country_id: e.target.value, region_id: ''},
+      availableRegions: availableRegions
     });
   }
 

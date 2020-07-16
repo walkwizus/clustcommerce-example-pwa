@@ -193,13 +193,6 @@ class App extends React.Component {
                   </span>
                 </Link>
               </div>
-              <div className="navbar-collapse collapse right" id="search-not-mobile">
-                <button type="button" className="btn navbar-btn btn-primary" data-toggle="collapse"
-                        data-target="#search">
-                  <span className="sr-only">Toggle search</span>
-                  <i className="fa fa-search"></i>
-                </button>
-              </div>
             </div>
             <div className="collapse clearfix" id="search">
               <form className="navbar-form" role="search">
