@@ -9,28 +9,93 @@ import cartHelper from '../helpers/cart';
 class Product extends React.Component {
   constructor(props) {
     super(props);
+
+    this.productOptions = {};
+    this.productOptionsPrices = {};
     this.state = {
       product: {},
+      price: undefined,
+      error: null,
       config: props.config
     };
   }
 
   componentDidMount() {
+    this.productOptions = {};
+
     var self = this;
     getPageContent()
       .then(function(response) {
         return response.json()
       }).then(function (result) {
-      self.setState({'product': result});
+        // Calculate percent prices on product options
+        result.options.forEach((option) => {
+          option.values.forEach((optionValue) => {
+            if (optionValue.price_type === 'percent') {
+              optionValue.price = result.price * optionValue.price / 100;
+            }
+          })
+        })
+
+        self.setState({'product': result, 'price': result.price});
     })
     ;
   }
 
   addToCart() {
     let self = this;
-    cartHelper.addProductToCart(self.state.product.sku, 1).then(() => {
+    let customOptions = []
+    for (let key in this.productOptions) {
+      customOptions.push({
+        option_id: key,
+        option_value: this.productOptions[key]
+      });
+    }
+    cartHelper.addProductToCart(self.state.product.sku, 1, {custom_options: customOptions}).then(() => {
+      self.setState({error: null})
       self.props.onCartUpdated()
+    }).catch((error) => {
+      self.setState({error: error})
     });
+  }
+
+  selectOption(type, optionId, value, price) {
+    if (!this.productOptionsPrices[optionId]) {
+      this.productOptionsPrices[optionId] = 0
+    }
+
+    let newPrice = this.state.price ? this.state.price - this.productOptionsPrices[optionId] + price : this.state.price;
+    this.productOptionsPrices[optionId] = price;
+
+    if (value === "" && this.productOptions[optionId]) {
+      delete this.productOptions[optionId]
+    } else {
+      this.productOptions[optionId] = value;
+    }
+
+    this.setState({'price': newPrice});
+  }
+
+  checkOption(optionId, value, price) {
+    console.log(this.productOptions[optionId])
+    if (!this.productOptions[optionId]) {
+      this.productOptions[optionId] = []
+    } else {
+      this.productOptions[optionId] = this.productOptions[optionId].split(',')
+    }
+
+    let newPrice = this.state.price
+    if (this.productOptions[optionId].includes(value)) {
+      newPrice = this.state.price ? this.state.price - price : this.state.price
+      this.productOptions[optionId].splice(this.productOptions[optionId].indexOf(value), 1)
+
+    } else {
+      newPrice = this.state.price ? this.state.price + price : this.state.price
+      this.productOptions[optionId].push(value)
+    }
+
+    this.productOptions[optionId] = this.productOptions[optionId].join(',')
+    this.setState({'price': newPrice});
   }
 
   buildRelatedHtml(label, products) {
@@ -75,6 +140,7 @@ class Product extends React.Component {
     let relatedProducts = []
     let crossProducts = []
     let upsellProducts = []
+    let configurableOptions = []
 
     if (this.state.product && this.state.product.product_links) {
       this.state.product.product_links.forEach((productLink) => {
@@ -86,6 +152,68 @@ class Product extends React.Component {
           upsellProducts.push(productLink)
         }
       })
+
+      this.state.product.options.forEach((productOptions) => {
+        switch(productOptions.type) {
+          case 'drop_down':
+            configurableOptions.push(<div className={"form-group"}>
+              <div className={"col-md-6 col-lg-4"}>{productOptions.title}</div>
+              <div className={"col-md-6 col-lg-8"}>
+                <select className={"form-control"} onChange={(e) => {
+                  this.selectOption('select', productOptions.option_id, e.target.value, parseInt(e.target.selectedOptions[0].getAttribute('data-price')));
+                }}>
+                  <option value={""} data-price={0}>---</option>
+                  {productOptions.values.map((value) => {
+                    return <option value={value.option_type_id} data-price={value.price}>{value.title} {value.price ? "(" + value.price + this.state.config.currency_symbol + ")" : ""}</option>
+                  })}
+                </select>
+              </div>
+            </div>)
+            break;
+          case 'radio':
+            configurableOptions.push(<div>
+              <div className={"col-md-6 col-lg-4"}>{productOptions.title}</div>
+              <div className={"col-md-6 col-lg-8"}>
+                {productOptions.is_require ? '' : (<div className={"radio"}>
+                  <label htmlFor={"default" + productOptions.option_id}>
+                    <input type={"radio"} name={productOptions.title} id={"default"+productOptions.option_id} value={""} onChange={(e) => {
+                      this.selectOption('radio', productOptions.option_id, e.target.value, 0);
+                    }} />
+                    None
+                  </label>
+                </div>)}
+                {productOptions.values.map((value) => {
+                  return <div className={"radio"}>
+                    <label htmlFor={value.option_type_id}>
+                      <input type={"radio"} name={productOptions.title} id={value.option_type_id} value={value.option_type_id} onChange={(e) => {
+                        this.selectOption('radio', productOptions.option_id, e.target.value, value.price);
+                      }}/>
+                      {value.title} {value.price ? "(" + value.price + this.state.config.currency_symbol + ")" : ""}
+                    </label>
+                  </div>
+                })}
+              </div>
+            </div>)
+            break;
+          case 'checkbox':
+            configurableOptions.push(<div>
+              <div className={"col-md-6 col-lg-4"}>{productOptions.title}</div>
+              <div className={"col-md-6 col-lg-8"}>
+                {productOptions.values.map((value) => {
+                  return <div className={"checkbox"}>
+                    <label htmlFor={value.option_type_id}>
+                      <input type={"checkbox"} name={productOptions.title} id={value.option_type_id} value={value.option_type_id} onChange={(e) => {
+                        this.checkOption(productOptions.option_id, e.target.value, value.price);
+                      }}/>
+                      {value.title} {value.price ? "(" + value.price + this.state.config.currency_symbol + ")" : ""}
+                    </label>
+                  </div>
+                })}
+              </div>
+            </div>)
+            break;
+        }
+      });
     }
 
     return <div id="content">
@@ -96,6 +224,10 @@ class Product extends React.Component {
             <li>{this.state.product.name}</li>
           </ul>
         </div>
+        {this.state.error
+          ? <div className="col-md-12"><div className={"alert alert-danger"}>{this.state.error}</div></div>
+          : ''
+        }
         <div className="col-md-12">
           <div className="row" id="productMain">
             <div className="col-sm-6">
@@ -109,10 +241,10 @@ class Product extends React.Component {
             <div className="col-sm-6">
               <div className="box">
                 <h1 className="text-center">{this.state.product.name}</h1>
-                <p className="price">{this.state.product.price ? this.state.config.currency_symbol : ''}{this.state.product.price}</p>
+                <p className="price">{this.state.price ? this.state.config.currency_symbol : ''}{this.state.price}</p>
                 <p className="text-center buttons">
-                  <div className="product-configurable-attributes">
-
+                  <div className="product-configurable-attributes" style={{"text-align": "left"}}>
+                    {configurableOptions}
                   </div>
                   <button type="submit" className="btn btn-primary" id="add-to-cart" onClick={this.addToCart.bind(this)}><i
                     className="fa fa-shopping-cart"></i> Add to cart

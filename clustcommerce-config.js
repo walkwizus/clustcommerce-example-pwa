@@ -21,7 +21,7 @@ module.exports.config = {
     }
 }
 
-module.exports.init = function(utils, config) {
+module.exports.init = async function(utils, config) {
     const {app} = utils;
     app.get('/cart', function (req, res) { res.sendFile(process.cwd() +'/build/index.html'); })
     app.get('/checkout', function (req, res) { res.sendFile(process.cwd() +'/build/index.html'); })

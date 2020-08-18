@@ -28,7 +28,7 @@ let helper = {
   getLastOrder: () => {
     return cache.get('CLUST_LAST_ORDER');
   },
-  addProductToCart: (sku, qty) => {
+  addProductToCart: (sku, qty, productOptions) => {
     const cart = helper.getCart();
     const customer = customerHelper.getCurrentCustomer()
     const customerToken = customer !== null ? customer.customerToken : '';
@@ -47,7 +47,7 @@ let helper = {
       fetch(url, {
         method: 'post',
         headers: myHeaders,
-        body: JSON.stringify({sku: sku, qty: qty})
+        body: JSON.stringify({sku: sku, qty: qty, product_option: {extension_attributes: productOptions}})
       }).then(function(response) {
         return response.json();
       }).then(function(data) {
