@@ -1,4 +1,7 @@
 const axios = require('axios');
+const fs = require('fs');
+const https = require('https');
+
 require('dotenv').config()
 
 module.exports.config = {
@@ -31,4 +34,11 @@ module.exports.init = async function(utils, config) {
     app.get('/login', function (req, res) { res.sendFile(process.cwd() +'/build/index.html'); })
     app.get('/account', function (req, res) { res.sendFile(process.cwd() +'/build/index.html'); })
     app.get('/account/orders', function (req, res) { res.sendFile(process.cwd() +'/build/index.html'); })
+
+    // Create https if possible
+    try {
+        const key = fs.readFileSync('./certs/key.pem');
+        const cert = fs.readFileSync('./certs/cert.pem');
+        utils.server = https.createServer({key: key, cert: cert }, app)
+    } catch(err) {}
 }
