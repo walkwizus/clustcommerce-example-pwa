@@ -17,6 +17,9 @@ import { configUpdated } from "./redux/actions";
 import { connect } from 'react-redux'
 import Account from "./pages/Account";
 import Orders from "./pages/Orders";
+import CmsPage from "./pages/CmsPage";
+import CategoryBlock from "./pages/CategoryBlock";
+import Home from "./pages/Home";
 
 class App extends React.Component {
   constructor(props) {
@@ -57,9 +60,15 @@ class App extends React.Component {
   routeComponent(page) {
     switch (page.type) {
       case 'category':
-        return <ProductList key={page.url_key} config={this.state.config}/>
+        if (page.displayMode === 'PAGE') {
+          return <CategoryBlock key={page.url_key} config={this.state.config}/>
+        } else {
+          return <ProductList key={page.url_key} config={this.state.config}/>
+        }
       case 'product':
         return <Product key={page.url_key} config={this.state.config}/>
+      case 'cms_page':
+        return <CmsPage key={page.url_key} config={this.state.config}/>
       default:
         return <Home config={this.state.config}/>
     }
@@ -233,14 +242,6 @@ class App extends React.Component {
 
     return view;
   }
-}
-
-function Home() {
-  return <div className={"container"}>
-    <div>
-      <h2>Home</h2>
-    </div>
-  </div>;
 }
 
 function getAllPages() {
