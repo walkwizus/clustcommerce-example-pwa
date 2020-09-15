@@ -10,12 +10,16 @@ module.exports.config = {
     ],
     server: {
         port: 3334,
-        index: './build/index.html'
+        index: './build/index.html',
+        hook_tokens: [
+          'skfjlslmkgjdkl65g4d56g4'
+        ]
     },
     source_magento: {
         base_url: process.env.MAGENTO2_URL,
         username: process.env.MAGENTO2_USER,
         password: process.env.MAGENTO2_PWD,
+        refresh_interval: process.env.REFRESH_INTERVAL,
         customer_session_lifetime: process.env.MAGENTO2_SESSION_LIFETIME,
         websites: [{
             store_view_code: process.env.MAGENTO2_DEFAULT_STORE_CODE,
