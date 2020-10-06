@@ -58,11 +58,11 @@ class Checkout extends React.Component {
 
     if (state.address.country_id === null && props.config.allowed_countries && props.config.allowed_countries.length > 0) {
       state.address = {...state.address, country_id: props.config.allowed_countries[0].id}
-      state.availableRegions = props.config.allowed_countries[0].available_regions
+      state.availableRegions = props.config.allowed_countries[0].available_regions || []
     } else if (state.address.country_id && props.config.allowed_countries && props.config.allowed_countries.length > 0) {
       props.config.allowed_countries.forEach((country) => {
         if (country.id === state.address.country_id) {
-          state.availableRegions = country.available_regions;
+          state.availableRegions = country.available_regions || [];
         }
       })
     }
@@ -75,7 +75,7 @@ class Checkout extends React.Component {
 
     for (const country_id of this.props.config.allowed_countries) {
       if (country_id.id === e.target.value) {
-        availableRegions = country_id.available_regions;
+        availableRegions = country_id.available_regions || [];
         break;
       }
     }
