@@ -245,7 +245,7 @@ class Product extends React.Component {
                   <div className="product-configurable-attributes" style={{"text-align": "left"}}>
                     {configurableOptions}
                   </div>
-                  {this.state.product.extension_attributes && this.state.product.extension_attributes.stock_salable.quantity !== 0 ? (<button type="submit" className="btn btn-primary" id="add-to-cart" onClick={this.addToCart.bind(this)}><i
+                  {this.state.product.extension_attributes && (this.state.product.extension_attributes.stock_salable.quantity > 0 || !this.state.product.extension_attributes.stock_salable.manage_stock) ? (<button type="submit" className="btn btn-primary" id="add-to-cart" onClick={this.addToCart.bind(this)}><i
                     className="fa fa-shopping-cart"></i> Add to cart
                   </button>) : 'Out of stock'}
                 </p>

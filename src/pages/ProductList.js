@@ -35,9 +35,9 @@ export default class ProductList extends React.Component {
 
       self.setState({
         'allProducts': result.products.sort((a, b) => {
-          if (a.stock === 0 && b.stock !== 0) {
+          if (a.manageStock && a.stock <= 0 && b.manageStock && b.stock > 0) {
             return 1;
-          } else if (a.stock !== 0 && b.stock === 0) {
+          } else if (a.manageStock && a.stock >= 0 && b.manageStock && b.stock <= 0) {
             return -1;
           }
 
@@ -343,7 +343,7 @@ export default class ProductList extends React.Component {
                       </a>
                     </div>
                     <div className="text">
-                      <h3><a href={"/"+product.urlKey}>{product.name}</a><em>{product.stock === 0 ? ' (Out of stock)' : ''}</em></h3>
+                      <h3><a href={"/"+product.urlKey}>{product.name}</a><em>{product.stock <= 0 && product.manageStock ? ' (Out of stock)' : ''}</em></h3>
                       <p className="price">{price}</p>
                       <p className="buttons">
                         <Link to={"/"+product.urlKey} className="btn btn-default">View
