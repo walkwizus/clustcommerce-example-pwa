@@ -31,6 +31,10 @@ class CheckoutDelivery extends React.Component {
   }
 
   render() {
+    if (!this.props.config || !this.props.config.base_currency_code) {
+      return '';
+    }
+
     return <div id="content">
       <div className="container">
         <div className="col-md-12">
@@ -52,7 +56,7 @@ class CheckoutDelivery extends React.Component {
                     <div className="box shipping-method">
 
                       <h4>{shippingMethod.carrier_title}</h4>
-                      <p>Price : {shippingMethod.price_incl_tax.toFixed(2)} {this.props.config.currency_symbol}</p>
+                      <p>Price : {shippingMethod.price_incl_tax.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.props.config.base_currency_code})}}</p>
 
                       <div className="box-footer text-center">
                         <input

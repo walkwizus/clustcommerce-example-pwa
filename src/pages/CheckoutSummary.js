@@ -18,6 +18,10 @@ class CheckoutSummary extends React.Component {
   }
 
   render() {
+    if (!this.props.config || !this.props.config.base_currency_code) {
+      return '';
+    }
+
     return <div id="content">
       <div className="container">
         <div className="col-md-12">
@@ -55,24 +59,24 @@ class CheckoutSummary extends React.Component {
                       </td>
                       <td><Link to={item.product.urlKey}>{item.product.name}</Link></td>
                       <td>{item.qty_ordered}</td>
-                      <td>{item.price.toFixed(2)} {this.props.config.currency_symbol}</td>
-                      <td>{item.discount_amount.toFixed(2)} {this.props.config.currency_symbol}</td>
-                      <td>{item.row_total_incl_tax.toFixed(2)} {this.props.config.currency_symbol}</td>
+                      <td>{item.price.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.props.config.base_currency_code})}</td>
+                      <td>{item.discount_amount.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.props.config.base_currency_code})}</td>
+                      <td>{item.row_total_incl_tax.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.props.config.base_currency_code})}</td>
                     </tr>)
                   })}
                   </tbody>
                   <tfoot>
                     <tr>
                       <td colSpan="5">Shipping and handling</td>
-                      <td colSpan="2">{this.state.order.shipping_amount.toFixed(2)} {this.props.config.currency_symbol}</td>
+                      <td colSpan="2">{this.state.order.shipping_amount.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.props.config.base_currency_code})}</td>
                     </tr>
                     <tr>
                       <td colSpan="5">Tax</td>
-                      <td colSpan="2">{this.state.order.tax_amount.toFixed(2)} {this.props.config.currency_symbol}</td>
+                      <td colSpan="2">{this.state.order.tax_amount.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.props.config.base_currency_code})}</td>
                     </tr>
                     <tr>
                       <th colSpan="5">Total</th>
-                      <th colSpan="2">{this.state.order.total_due.toFixed(2)} {this.props.config.currency_symbol}</th>
+                      <th colSpan="2">{this.state.order.total_due.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.props.config.base_currency_code})}</th>
                     </tr>
                   </tfoot>
                 </table>

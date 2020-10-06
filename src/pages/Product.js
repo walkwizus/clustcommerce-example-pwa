@@ -37,7 +37,7 @@ class Product extends React.Component {
           })
         })
 
-        self.setState({'product': result, 'price': result.price});
+        self.setState({'product': result, 'price': result.price.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: self.state.config.base_currency_code})});
     })
     ;
   }
@@ -73,11 +73,10 @@ class Product extends React.Component {
       this.productOptions[optionId] = value;
     }
 
-    this.setState({'price': newPrice});
+    this.setState({'price': newPrice.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.state.config.base_currency_code})});
   }
 
   checkOption(optionId, value, price) {
-    console.log(this.productOptions[optionId])
     if (!this.productOptions[optionId]) {
       this.productOptions[optionId] = []
     } else {
@@ -95,7 +94,7 @@ class Product extends React.Component {
     }
 
     this.productOptions[optionId] = this.productOptions[optionId].join(',')
-    this.setState({'price': newPrice});
+    this.setState({'price': newPrice.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.state.config.base_currency_code})});
   }
 
   buildRelatedHtml(label, products) {
@@ -164,7 +163,7 @@ class Product extends React.Component {
                 }}>
                   <option value={""} data-price={0}>---</option>
                   {productOptions.values.map((value) => {
-                    return <option value={value.option_type_id} data-price={value.price}>{value.title} {value.price ? "(" + value.price + this.state.config.currency_symbol + ")" : ""}</option>
+                    return <option value={value.option_type_id} data-price={value.price}>{value.title} {value.price ? "(" + value.price.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.state.config.base_currency_code}) + ")" : ""}</option>
                   })}
                 </select>
               </div>
@@ -188,7 +187,7 @@ class Product extends React.Component {
                       <input type={"radio"} name={productOptions.title} id={value.option_type_id} value={value.option_type_id} onChange={(e) => {
                         this.selectOption('radio', productOptions.option_id, e.target.value, value.price);
                       }}/>
-                      {value.title} {value.price ? "(" + value.price + this.state.config.currency_symbol + ")" : ""}
+                      {value.title} {value.price ? "(" + value.price.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.state.config.base_currency_code}) + ")" : ""}
                     </label>
                   </div>
                 })}
@@ -205,7 +204,7 @@ class Product extends React.Component {
                       <input type={"checkbox"} name={productOptions.title} id={value.option_type_id} value={value.option_type_id} onChange={(e) => {
                         this.checkOption(productOptions.option_id, e.target.value, value.price);
                       }}/>
-                      {value.title} {value.price ? "(" + value.price + this.state.config.currency_symbol + ")" : ""}
+                      {value.title} {value.price ? "(" + value.price.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.state.config.base_currency_code}) + ")" : ""}
                     </label>
                   </div>
                 })}
@@ -241,14 +240,14 @@ class Product extends React.Component {
             <div className="col-sm-6">
               <div className="box">
                 <h1 className="text-center">{this.state.product.name}</h1>
-                <p className="price">{this.state.price ? this.state.config.currency_symbol : ''}{this.state.price}</p>
+                <p className="price">{this.state.price ? this.state.price.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.state.config.base_currency_code}) : ''}</p>
                 <p className="text-center buttons">
                   <div className="product-configurable-attributes" style={{"text-align": "left"}}>
                     {configurableOptions}
                   </div>
-                  <button type="submit" className="btn btn-primary" id="add-to-cart" onClick={this.addToCart.bind(this)}><i
+                  {this.state.product.extension_attributes && this.state.product.extension_attributes.stock_salable.quantity !== 0 ? (<button type="submit" className="btn btn-primary" id="add-to-cart" onClick={this.addToCart.bind(this)}><i
                     className="fa fa-shopping-cart"></i> Add to cart
-                  </button>
+                  </button>) : 'Out of stock'}
                 </p>
               </div>
 

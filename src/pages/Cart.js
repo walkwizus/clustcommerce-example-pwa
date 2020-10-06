@@ -11,6 +11,10 @@ class Cart extends React.Component {
   }
 
   render() {
+    if (!this.props.config || !this.props.config.base_currency_code) {
+      return '';
+    }
+
     return <div id="content">
       <div className="container">
         <div className="col-md-12">
@@ -47,9 +51,9 @@ class Cart extends React.Component {
                     <td>
                       <input type="number" value={item.qty} className="form-control"/>
                     </td>
-                    <td>{this.props.config.currency_symbol}{item.price_incl_tax}</td>
-                    <td>{this.props.config.currency_symbol}{item.discount_amount}</td>
-                    <td>{this.props.config.currency_symbol}{item.base_row_total_incl_tax}</td>
+                    <td>{item.price_incl_tax.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.props.config.base_currency_code})}</td>
+                    <td>{item.discount_amount.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.props.config.base_currency_code})}</td>
+                    <td>{item.base_row_total_incl_tax.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.props.config.base_currency_code})}</td>
                     <td><a href="#"><i className="fa fa-trash-o"></i></a>
                     </td>
                   </tr>)
@@ -58,7 +62,7 @@ class Cart extends React.Component {
                 <tfoot>
                   <tr>
                     <th colSpan="5">Total</th>
-                    <th colSpan="2">{this.props.config.currency_symbol}{this.props.cart.grand_total}</th>
+                    <th colSpan="2">{this.props.cart.grand_total ? this.props.cart.grand_total.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.props.config.base_currency_code}) : '-'}</th>
                   </tr>
                 </tfoot>
               </table>

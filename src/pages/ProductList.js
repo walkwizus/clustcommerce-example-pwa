@@ -34,7 +34,15 @@ export default class ProductList extends React.Component {
       })
 
       self.setState({
-        'allProducts': result.products,
+        'allProducts': result.products.sort((a, b) => {
+          if (a.stock === 0 && b.stock !== 0) {
+            return 1;
+          } else if (a.stock !== 0 && b.stock === 0) {
+            return -1;
+          }
+
+          return 0;
+        }),
         'filterTypes': filterTypes,
         'applicableFilters': result.applicableFilters,
         'category': result,
@@ -303,7 +311,7 @@ export default class ProductList extends React.Component {
                 let price = 'No price'
                 product.filterableValues.forEach((filterableValue) => {
                   if (filterableValue.attribute === 'price') {
-                    price = filterableValue.value
+                    price = filterableValue.value.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: self.state.config.base_currency_code})
                   }
                 })
 
@@ -335,8 +343,8 @@ export default class ProductList extends React.Component {
                       </a>
                     </div>
                     <div className="text">
-                      <h3><a href={"/"+product.urlKey}>{product.name}</a></h3>
-                      <p className="price">{price !== 'No price' ? self.state.config.currency_symbol : ''}{price}</p>
+                      <h3><a href={"/"+product.urlKey}>{product.name}</a><em>{product.stock === 0 ? ' (Out of stock)' : ''}</em></h3>
+                      <p className="price">{price}</p>
                       <p className="buttons">
                         <Link to={"/"+product.urlKey} className="btn btn-default">View
                           detail</Link>

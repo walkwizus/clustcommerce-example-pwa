@@ -224,14 +224,14 @@ class App extends React.Component {
               return <Route path={'/'+ page.url_key} render={() => self.routeComponent(page)}/>
             })}
 
-            <Route path="/cart" render={() => <Cart config={self.state.config}/> }/>
-            <Route path="/checkout-shipping" render={() => <CheckoutDelivery config={self.state.config}/> }/>
-            <Route path="/checkout-payment" render={() => <CheckoutPayment config={self.state.config}/> }/>
-            <Route path="/checkout-summary" render={() => <CheckoutSummary config={self.state.config}/> }/>
-            <Route path="/checkout" render={() => <Checkout config={self.state.config}/> }/>
-            <Route path="/login" render={() => <Login config={self.state.config}/> }/>
-            <Route path="/account/orders" render={() => <Orders config={self.state.config}/> }/>
-            <Route path="/account" render={() => <Account config={self.state.config}/> }/>
+            <Route path="/cart" render={() => <Cart /> }/>
+            <Route path="/checkout-shipping" render={() => <CheckoutDelivery/> }/>
+            <Route path="/checkout-payment" render={() => <CheckoutPayment/> }/>
+            <Route path="/checkout-summary" render={() => <CheckoutSummary /> }/>
+            <Route path="/checkout" render={() => <Checkout /> }/>
+            <Route path="/login" render={() => <Login /> }/>
+            <Route path="/account/orders" render={() => <Orders /> }/>
+            <Route path="/account" render={() => <Account /> }/>
             <Route path="/" onChange={self.componentDidMount}>
               <Home />
             </Route>

@@ -43,6 +43,10 @@ class Orders extends React.Component {
   }
 
   render() {
+    if (!this.props.config || !this.props.config.base_currency_code) {
+      return '';
+    }
+
     return <div id="content">
       <div className="container">
         <div className="col-md-12">
@@ -78,7 +82,7 @@ class Orders extends React.Component {
                   return <tr>
                     <th>#{order.increment_id}</th>
                     <td>{order.created_at}</td>
-                    <td>{this.props.config.currency_symbol}{order.grand_total}</td>
+                    <td>{order.grand_total.toLocaleString(navigator.language || navigator.userLanguage, {style: 'currency', currency: this.props.config.base_currency_code})}</td>
                     <td>{this.getTag(order)}</td>
                   </tr>
                 })}
