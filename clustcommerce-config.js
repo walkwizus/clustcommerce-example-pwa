@@ -17,8 +17,7 @@ module.exports.config = {
     },
     source_magento: {
         base_url: process.env.MAGENTO2_URL,
-        username: process.env.MAGENTO2_USER,
-        password: process.env.MAGENTO2_PWD,
+        access_token: process.env.MAGENTO2_ACCESS_TOKEN,
         refresh_interval: process.env.REFRESH_INTERVAL,
         customer_session_lifetime: process.env.MAGENTO2_SESSION_LIFETIME,
         websites: [{
