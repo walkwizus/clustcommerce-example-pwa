@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import customerHelper from '../helpers/customer';
 import AccountNavigation from "../components/AccountNavigation";
 import {customerUpdated} from "../redux/actions";
+import { trackPromise } from 'react-promise-tracker';
 
 class Account extends React.Component {
   constructor(props) {
@@ -163,14 +164,16 @@ class Account extends React.Component {
     self.setState({passwordErrors: errors});
 
     if (!hasError) {
-      customerHelper.updatePassword({
-        currentPassword: self.state.password.old_password,
-        newPassword: self.state.password.renew_password
-      }).then(() => {
-        self.setState({successMessage: 'Changes saved'})
-      }).catch((err) => {
-        self.setState({errorMessage: err});
-      });
+      trackPromise(
+        customerHelper.updatePassword({
+          currentPassword: self.state.password.old_password,
+          newPassword: self.state.password.renew_password
+        }).then(() => {
+          self.setState({successMessage: 'Changes saved'})
+        }).catch((err) => {
+          self.setState({errorMessage: err});
+        })
+      );
     }
   }
 
@@ -211,12 +214,14 @@ class Account extends React.Component {
       newCustomer.email = self.state.address.email
       delete newCustomer.customerToken
 
-      customerHelper.update(newCustomer).then(() => {
-        self.props.updateSuccess();
-        self.setState({successMessage: 'Changes saved'})
-      }).catch((err) => {
-        self.setState({errorMessage: err});
-      });
+      trackPromise(
+        customerHelper.update(newCustomer).then(() => {
+          self.props.updateSuccess();
+          self.setState({successMessage: 'Changes saved'})
+        }).catch((err) => {
+          self.setState({errorMessage: err});
+        })
+      );
     }
   }
 

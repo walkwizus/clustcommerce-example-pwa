@@ -7,6 +7,7 @@ import cartHelper from '../helpers/cart';
 import OrderNavigation from '../components/OrderNavigation';
 import OrderSummary from '../components/OrderSummary';
 import {cartUpdated} from "../redux/actions";
+import { trackPromise } from 'react-promise-tracker';
 
 class CheckoutDelivery extends React.Component {
   constructor(props) {
@@ -18,16 +19,20 @@ class CheckoutDelivery extends React.Component {
   }
 
   componentDidMount() {
-    cartHelper.getShippingMethods(cartHelper.getAddress()).then((methods) => {
-      this.setState({shippingMethods: methods});
-    })
+    trackPromise(
+      cartHelper.getShippingMethods(cartHelper.getAddress()).then((methods) => {
+        this.setState({shippingMethods: methods});
+      })
+    );
   }
 
   selectShipping(carrierCode, methodCode) {
     var self = this;
-    cartHelper.setShippingInformations(cartHelper.getAddress(), methodCode, carrierCode).then(() => {
-      self.props.onCartUpdated()
-    });
+    trackPromise(
+      cartHelper.setShippingInformations(cartHelper.getAddress(), methodCode, carrierCode).then(() => {
+        self.props.onCartUpdated()
+      })
+    );
   }
 
   render() {

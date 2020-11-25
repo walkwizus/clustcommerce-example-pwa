@@ -20,6 +20,32 @@ import Orders from "./pages/Orders";
 import CmsPage from "./pages/CmsPage";
 import CategoryBlock from "./pages/CategoryBlock";
 import Home from "./pages/Home";
+import { usePromiseTracker } from "react-promise-tracker";
+import Loader from "react-loader-spinner";
+
+const LoadingIndicator = props => {
+  const { promiseInProgress } = usePromiseTracker();
+
+  return (
+    promiseInProgress ? <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      background: 'rgba(0,0,0, 0.5)'
+    }}>
+      <div style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)'
+      }}>
+        <Loader type="Puff" color="#00BFFF" height={80} width={80} />
+      </div>
+    </div> : ''
+  );
+}
 
 class App extends React.Component {
   constructor(props) {
@@ -237,6 +263,7 @@ class App extends React.Component {
             </Route>
           </Switch>
         </div>
+        <LoadingIndicator/>
       </Router>
     );
 

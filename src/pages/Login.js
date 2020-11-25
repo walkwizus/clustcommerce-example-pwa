@@ -6,6 +6,7 @@ import {
 import { connect } from 'react-redux'
 import customerHelper from "../helpers/customer";
 import {customerUpdated} from "../redux/actions";
+import { trackPromise } from 'react-promise-tracker';
 
 class Login extends React.Component {
   constructor(props) {
@@ -66,15 +67,17 @@ class Login extends React.Component {
     self.setState({errorLoginForm: errors, errorMessage: null});
 
     if (!hasError) {
-      customerHelper.login(
-        this.state.loginForm.username,
-        this.state.loginForm.password,
-      ).then((customer) => {
-        self.props.loginSuccess();
-        this.setState({'redirect': '/account'});
-      }).catch((err) => {
-        this.setState({errorMessage: err});
-      });
+      trackPromise(
+        customerHelper.login(
+          this.state.loginForm.username,
+          this.state.loginForm.password,
+        ).then((customer) => {
+          self.props.loginSuccess();
+          this.setState({'redirect': '/account'});
+        }).catch((err) => {
+          this.setState({errorMessage: err});
+        })
+      );
     }
   }
 
@@ -92,16 +95,18 @@ class Login extends React.Component {
     self.setState({errorRegisterForm: errors, errorMessage: null});
 
     if (!hasError) {
-      customerHelper.register(
-        this.state.registerForm.firstname,
-        this.state.registerForm.lastname,
-        this.state.registerForm.email,
-        this.state.registerForm.password
-      ).then((customer) => {
-        this.setState({'redirect': '/account'});
-      }).catch((err) => {
-        this.setState({errorMessage: err});
-      });
+      trackPromise(
+        customerHelper.register(
+          this.state.registerForm.firstname,
+          this.state.registerForm.lastname,
+          this.state.registerForm.email,
+          this.state.registerForm.password
+        ).then((customer) => {
+          this.setState({'redirect': '/account'});
+        }).catch((err) => {
+          this.setState({errorMessage: err});
+        })
+      );
     }
   }
 

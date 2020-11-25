@@ -7,6 +7,7 @@ import cartHelper from '../helpers/cart';
 import OrderNavigation from '../components/OrderNavigation';
 import OrderSummary from '../components/OrderSummary';
 import {cartUpdated} from "../redux/actions";
+import { trackPromise } from 'react-promise-tracker';
 
 class CheckoutPayment extends React.Component {
   constructor(props) {
@@ -19,10 +20,12 @@ class CheckoutPayment extends React.Component {
   }
 
   payment() {
-    cartHelper.placeOrder(this.state.paymentMethod).then(() => {
-      this.props.onCartUpdated()
-      this.setState({redirect: '/checkout-summary'})
-    })
+    trackPromise(
+      cartHelper.placeOrder(this.state.paymentMethod).then(() => {
+        this.props.onCartUpdated()
+        this.setState({redirect: '/checkout-summary'})
+      })
+    );
   }
 
   render() {
