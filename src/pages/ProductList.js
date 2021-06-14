@@ -29,12 +29,12 @@ export default class ProductList extends React.Component {
       return response.json()
     }).then(function (result) {
       let filterTypes = {};
-      result.applicableFilters.forEach((applicableFilter) => {
+      result.data.applicableFilters.forEach((applicableFilter) => {
         filterTypes[applicableFilter.attribute] = applicableFilter.frontend_input
       })
 
       self.setState({
-        'allProducts': result.products.sort((a, b) => {
+        'allProducts': result.data.products.sort((a, b) => {
           if (a.manageStock && a.stock <= 0 && b.manageStock && b.stock > 0) {
             return 1;
           } else if (a.manageStock && a.stock >= 0 && b.manageStock && b.stock <= 0) {
@@ -44,8 +44,8 @@ export default class ProductList extends React.Component {
           return 0;
         }),
         'filterTypes': filterTypes,
-        'applicableFilters': result.applicableFilters,
-        'category': result,
+        'applicableFilters': result.data.applicableFilters,
+        'category': result.data,
         'path': window.location.pathname
       });
 
@@ -320,30 +320,30 @@ export default class ProductList extends React.Component {
                     <div className="flip-container">
                       <div className="flipper">
                         <div className="front">
-                          <a href={"/"+product.urlKey}>
+                          <Link to={"/"+product.urlKey}>
                             <img
                               src={product.image}
                               alt="" className="img-responsive" style={{height: "250px"}}/>
-                          </a>
+                          </Link>
                         </div>
                         <div className="back">
-                          <a href={"/"+product.urlKey}>
+                          <Link to={"/"+product.urlKey}>
                             <img
                               src={product.image}
                               alt="" className="img-responsive" style={{height: "250px"}}/>
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
                     <div style={{height: "250px"}}>
-                      <a href={"/"+product.urlKey} className="invisible">
+                      <Link to={"/"+product.urlKey} className="invisible">
                         <img
                           src={product.image}
                           alt="" className="img-responsive" style={{height: "250px"}}/>
-                      </a>
+                      </Link>
                     </div>
                     <div className="text">
-                      <h3><a href={"/"+product.urlKey}>{product.name}</a><em>{product.stock <= 0 && product.manageStock ? ' (Out of stock)' : ''}</em></h3>
+                      <h3><Link to={"/"+product.urlKey}>{product.name}</Link><em>{product.stock <= 0 && product.manageStock ? ' (Out of stock)' : ''}</em></h3>
                       <p className="price">{price}</p>
                       <p className="buttons">
                         <Link to={"/"+product.urlKey} className="btn btn-default">View

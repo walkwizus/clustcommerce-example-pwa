@@ -246,9 +246,9 @@ class App extends React.Component {
           {/* A <Switch> looks through its children <Route>s and
           renders the first one that matches the current URL. */}
           <Switch>
-            {this.state.allPages.map(function(page) {
+            {/*this.state.allPages.map(function(page) {
               return <Route path={'/'+ page.url_key} render={() => self.routeComponent(page)}/>
-            })}
+            })*/}
 
             <Route path="/cart" render={() => <Cart /> }/>
             <Route path="/checkout-shipping" render={() => <CheckoutDelivery/> }/>
@@ -258,6 +258,7 @@ class App extends React.Component {
             <Route path="/login" render={() => <Login /> }/>
             <Route path="/account/orders" render={() => <Orders /> }/>
             <Route path="/account" render={() => <Account /> }/>
+            <Route path="/:route" render={(props) => { console.log('ok'); return <AnyRoute {...props}/> }}></Route>
             <Route path="/" onChange={self.componentDidMount}>
               <Home />
             </Route>
@@ -269,6 +270,63 @@ class App extends React.Component {
 
     return view;
   }
+}
+
+class AnyRouteCmp extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      component: null
+    }
+  }
+
+  componentWillReceiveProps() {
+    this.componentDidMount();
+  }
+
+  componentDidMount() {
+    var self = this;
+    getPageContent()
+      .then(function (response) {
+        return response.json()
+      }).then(function (result) {
+        switch (result.type) {
+          case 'category':
+            if (result.data.displayMode === 'PAGE') {
+              self.setState({component: <CategoryBlock key={result.url_key} config={self.props.config}/>})
+            } else {
+              self.setState({component: <ProductList key={result.url_key} config={self.props.config}/>})
+            }
+            break;
+          case 'product':
+            self.setState({component: <Product key={result.url_key} config={self.props.config}/>})
+            break;
+          case 'cms_page':
+            self.setState({component: <CmsPage key={result.url_key} config={self.props.config}/>})
+            break;
+        }
+      })
+    ;
+  }
+
+  render() {
+    return this.state.component ? this.state.component : '';
+  }
+}
+
+const AnyRoute = connect(
+  (state) => { return {
+    config: state.app.config ? state.app.config : {},
+  } }
+)(AnyRouteCmp)
+
+function getPageContent() {
+  var myHeaders = new Headers();
+  myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
+  var path = window.location.pathname;
+
+  return fetch('/__internal/page-content?urlKey=' + (path !== "/" ? path.substr(1) : 'home'), {headers: myHeaders});
 }
 
 function getAllPages() {
@@ -286,7 +344,6 @@ function getMenu() {
 function getConfig() {
   var myHeaders = new Headers();
   myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
-  var path = window.location.pathname;
 
   return fetch('/__internal/source-magento2/config', {headers: myHeaders});
 }

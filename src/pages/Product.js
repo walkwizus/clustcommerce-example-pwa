@@ -25,7 +25,7 @@ class Product extends React.Component {
       .then(function(response) {
         return response.json()
       }).then(function (result) {
-        self.setState({'product': result});
+        self.setState({'product': result.data});
       })
     ;
   }

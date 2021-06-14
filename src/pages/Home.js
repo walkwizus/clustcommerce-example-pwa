@@ -15,7 +15,7 @@ export default class Home extends React.Component {
       .then(function(response) {
         return response.json()
       }).then(function (result) {
-      self.setState({'page': result});
+      self.setState({'page': result.data});
     });
   }
 

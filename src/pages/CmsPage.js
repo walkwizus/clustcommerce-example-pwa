@@ -16,7 +16,7 @@ export default class CmsPage extends React.Component {
       .then(function(response) {
         return response.json()
       }).then(function (result) {
-        self.setState({'page': result});
+        self.setState({'page': result.data});
     });
   }
 
@@ -37,5 +37,5 @@ function getPageContent() {
   myHeaders.append('x-clustcommerce-magento-origin', window.location.origin);
   var path = window.location.pathname;
 
-  return fetch('/__internal/page-content?urlKey=' + path.substr(1), {headers: myHeaders});
+  return fetch('/__internal/page-content?urlKey=' + (path !== "/" ? path.substr(1) : 'home'), {headers: myHeaders});
 }
